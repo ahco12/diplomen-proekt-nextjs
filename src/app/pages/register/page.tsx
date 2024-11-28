@@ -4,7 +4,10 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig'; // Adjust this path to your Firebase configuration
 import { useRouter } from 'next/navigation'; // Next.js router for navigation
-import { doc, setDoc, getFirestore } from 'firebase/firestore'; 
+import { doc, setDoc, getFirestore } from 'firebase/firestore';
+import Link from 'next/link'; // Import Link for client-side navigation
+import Navbar from '../../components/navbar'; // Import the reusable Navbar component
+
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -39,15 +42,17 @@ const Register: React.FC = () => {
   };
 
   return (
+    
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <Navbar />
       <form onSubmit={handleRegister} className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold mb-4">Register</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black">Register</h2>
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
         <input
           type="text"
           placeholder="Username"
-          className="w-full p-3 mb-4 border rounded"
+          className="w-full p-3 mb-4 border rounded text-black"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -55,7 +60,7 @@ const Register: React.FC = () => {
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-3 mb-4 border rounded"
+          className="w-full p-3 mb-4 border rounded text-black"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -63,7 +68,7 @@ const Register: React.FC = () => {
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-3 mb-4 border rounded"
+          className="w-full p-3 mb-4 border rounded text-black"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -74,11 +79,11 @@ const Register: React.FC = () => {
 
         {/* Link to login page */}
         <div className="mt-4 text-center">
-          <p className="text-sm">
+          <p className="text-sm text-black">
             Already have an account?{' '}
-            <a href="/login" className="text-blue-500 hover:underline">
+            <Link href="../../pages/login" className="text-blue-500 hover:underline">
               Log in
-            </a>
+            </Link>
           </p>
         </div>
       </form>
