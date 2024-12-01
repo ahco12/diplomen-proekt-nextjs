@@ -1,11 +1,145 @@
-import React from 'react';
-import Navbar from '../../components/navbar'; // Import the reusable Navbar component
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Navbar from '../../components/navbar'; // Import the Navbar component
+
+interface Item {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+}
 
 const StorePage: React.FC = () => {
+  const [items, setItems] = useState<Item[]>([]);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<string>('recommended');
+  const [priceRange, setPriceRange] = useState<number>(100); // Slider value
+  const [maxPrice, setMaxPrice] = useState<number>(100); // Maximum price of items
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const fetchedItems: Item[] = [
+        { id: 1, name: 'Item 1', description: 'Description 1', price: 20, image: '/image1.jpg' },
+        { id: 2, name: 'Item 2', description: 'Description 2', price: 40, image: '/image2.jpg' },
+        { id: 3, name: 'Item 3', description: 'Description 3', price: 60, image: '/image3.jpg' },
+        { id: 4, name: 'Item 4', description: 'Description 4', price: 100, image: '/image4.jpg' },
+      ];
+
+      setItems(fetchedItems);
+      setFilteredItems(fetchedItems);
+
+      // Dynamically determine the maximum price
+      const maxItemPrice = Math.max(...fetchedItems.map((item) => item.price));
+      setMaxPrice(Math.ceil(maxItemPrice / 10) * 10); // Round up to the nearest $10
+      setPriceRange(Math.ceil(maxItemPrice / 10) * 10); // Set the slider to max by default
+    };
+
+    fetchItems();
+  }, []);
+
+  useEffect(() => {
+    const filtered = items.filter((item) =>
+      (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.price.toString().includes(searchQuery)) &&
+      item.price <= priceRange // Filter items by price range
+    );
+
+    if (sortOrder === 'low-to-high') {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (sortOrder === 'high-to-low') {
+      filtered.sort((a, b) => b.price - a.price);
+    }
+
+    setFilteredItems(filtered);
+  }, [searchQuery, sortOrder, priceRange, items]);
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div>
+      {/* Navbar */}
       <Navbar />
-      <h1 className="text-3xl font-bold">Welcome to the Store!</h1>
+
+      {/* Store Page Content */}
+      <div className="flex mt-20">
+        {/* Filters Section */}
+        <div className="w-1/5 p-4 bg-gray-100">
+          <h2 className="text-lg font-bold mb-4 text-orange-500">Filters</h2>
+          <ul>
+            <li>
+              <label className="text-orange-500">
+                <input type="checkbox" />
+                Filter 1
+              </label>
+            </li>
+            <li>
+              <label className="text-orange-500">
+                <input type="checkbox" />
+                Filter 2
+              </label>
+            </li>
+          </ul>
+          <h3 className="mt-4 font-bold text-orange-500">Price Range</h3>
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-orange-500">$0</span>
+            <span className="text-orange-500">${maxPrice}</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max={maxPrice}
+            step="10" // Step value of $10
+            value={priceRange}
+            onChange={(e) => setPriceRange(Number(e.target.value))}
+            className="w-full mt-2 "
+          />
+          <p className="text-sm  mt-2 text-orange-300">Selected Price: ${priceRange}</p>
+        </div>
+
+        {/* Main Section */}
+        <div className="w-4/5 p-4 bg-white">
+          {/* Search and Sort */}
+          <div className="flex justify-between items-center mb-4">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="p-2 border rounded w-2/3"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <select
+              className="p-2 border rounded"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="recommended">Recommended</option>
+              <option value="low-to-high">Price: Low to High</option>
+              <option value="high-to-low">Price: High to Low</option>
+            </select>
+          </div>
+
+          {/* Items Grid */}
+          <div className="grid grid-cols-3 gap-4">
+            {filteredItems.map((item) => (
+              <div key={item.id} className="border rounded p-4 flex flex-col items-center w-96">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  width={150}
+                  height={150}
+                  className="mb-2 object-cover"
+                />
+                <h3 className="font-bold text-md text-black">{item.name}</h3>
+                <p className="text-sm text-gray-600">{item.description}</p>
+                <p className="font-bold text-orange-500">${item.price}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -116,7 +116,7 @@ const Navbar: React.FC = () => {
       {showLogoutModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-            <h2 className="text-xl font-semibold text-center mb-4">Are you sure you want to log out?</h2>
+            <h2 className="text-xl font-semibold text-center mb-4 text-black">Are you sure you want to log out?</h2>
             <div className="flex justify-center space-x-4">
               <button
                 onClick={handleLogout}
