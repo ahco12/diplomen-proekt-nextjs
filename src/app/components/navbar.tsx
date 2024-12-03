@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from './AuthProvider'; // Your Auth context to get the user state
 import { auth } from '../firebase/firebaseConfig'; // Firebase auth
 import { signOut } from 'firebase/auth';
@@ -13,6 +13,7 @@ const Navbar: React.FC = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false); // Modal visibility for logout confirmation
   const { user } = useAuth(); // Auth context to check if the user is logged in
   const router = useRouter();
+  const pathname = usePathname(); // Get the current pathname
   const db = getFirestore();
 
   // Fetch username from Firestore if the user is logged in
@@ -38,40 +39,54 @@ const Navbar: React.FC = () => {
     }
   };
 
-  const handleProfile = () => {
-    router.push('../pages/profile'); // Navigate to profile page
-  };
-
-  const toggleDropdown = () => {
-    setDropdownVisible((prev) => !prev); // Toggle dropdown visibility
-  };
-
-  const handleLogin = () => {
-    router.push('../pages/login'); // Navigate to login page
-  };
-
-  const handleRegister = () => {
-    router.push('../pages/register'); // Navigate to register page
-  };
-
   const handleCancelLogout = () => {
     setShowLogoutModal(false); // Close the modal without logging out
+  };
+
+  const handleNavigation = (link: string) => {
+    router.push(`/pages/${link.toLowerCase().replace(' ', '-')}`); // Navigate to the correct page
+  };
+
+  // Get active link from the current pathname
+  const getActiveLink = (link: string) => {
+    const linkPath = `/pages/${link.toLowerCase().replace(' ', '-')}`;
+    return pathname === linkPath;
   };
 
   return (
     <nav className="bg-orange-500 py-4 shadow-md fixed top-0 left-0 w-full z-10">
       <div className="container mx-auto flex justify-between items-center px-4">
-        {/* Logo or Title */}
-        <h1 className="text-white text-xl font-bold cursor-pointer" onClick={() => router.push('/')}>
+        {/* Logo */}
+        <h1
+          className="text-white text-xl font-bold cursor-pointer bg-orange-600 px-4 py-2 rounded-md"
+          onClick={() => router.push('/')}
+        >
           Learn & Earn
         </h1>
 
-        {/* Right side: Login/Register or Username with Dropdown */}
+        {/* Oval Navigation Links */}
+        <div className="bg-white px-6 py-2 rounded-full flex items-center space-x-8 shadow-md">
+          {['Store', 'Game', 'Earn More'].map((link) => (
+            <button
+              key={link}
+              onClick={() => handleNavigation(link)}
+              className={`text-orange-500 px-4 py-2 rounded-lg transition relative hover:scale-105 ${
+                getActiveLink(link)
+                  ? 'border border-orange-500 scale-105 shadow-md text-orange-600 font-semibold bg-orange-100'
+                  : ''
+              } ${link === 'Game' ? 'text-lg font-bold' : ''}`}
+            >
+              {link}
+            </button>
+          ))}
+        </div>
+
+        {/* Right Side: Auth Buttons or Dropdown */}
         <div className="relative">
           {user ? (
             <div>
               <button
-                onClick={toggleDropdown}
+                onClick={() => setDropdownVisible((prev) => !prev)}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
               >
                 {username || 'User'}
@@ -79,13 +94,13 @@ const Navbar: React.FC = () => {
               {dropdownVisible && (
                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border">
                   <button
-                    onClick={handleProfile}
+                    onClick={() => router.push('/pages/profile')}
                     className="block px-4 py-2 text-left text-gray-700 hover:bg-gray-100 w-full"
                   >
                     Profile
                   </button>
                   <button
-                    onClick={() => setShowLogoutModal(true)} // Show the logout confirmation modal
+                    onClick={() => setShowLogoutModal(true)}
                     className="block px-4 py-2 text-left text-gray-700 hover:bg-gray-100 w-full"
                   >
                     Log Out
@@ -96,13 +111,13 @@ const Navbar: React.FC = () => {
           ) : (
             <div className="flex space-x-4">
               <button
-                onClick={handleLogin}
+                onClick={() => router.push('/pages/login')}
                 className="px-4 py-2 bg-white text-orange-500 border border-orange-500 rounded-lg hover:bg-orange-500 hover:text-white transition"
               >
                 Login
               </button>
               <button
-                onClick={handleRegister}
+                onClick={() => router.push('/pages/register')}
                 className="px-4 py-2 bg-white text-orange-500 border border-orange-500 rounded-lg hover:bg-orange-500 hover:text-white transition"
               >
                 Register

@@ -106,12 +106,12 @@ const StorePage: React.FC = () => {
             <input
               type="text"
               placeholder="Search..."
-              className="p-2 border rounded w-2/3"
+              className="p-2 border rounded w-2/3 text-black"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <select
-              className="p-2 border rounded"
+              className="p-2 border rounded bg-white text-black"
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
             >

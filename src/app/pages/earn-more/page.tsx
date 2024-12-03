@@ -8,7 +8,7 @@ const GamePage: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       {/* Navigation Bar */}
       <Navbar />
-      <h1 className="text-3xl font-bold text-black">Welcome to the Minigame!</h1>
+      <h1 className="text-3xl font-bold text-black">Welcome to earn more!</h1>
     </div>
   );
 };
