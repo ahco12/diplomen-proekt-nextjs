@@ -32,7 +32,6 @@ const StorePage: React.FC = () => {
       setItems(fetchedItems);
       setFilteredItems(fetchedItems);
 
-      // Dynamically determine the maximum price
       const maxItemPrice = Math.max(...fetchedItems.map((item) => item.price));
       setMaxPrice(Math.ceil(maxItemPrice / 10) * 10); // Round up to the nearest $10
       setPriceRange(Math.ceil(maxItemPrice / 10) * 10); // Set the slider to max by default
@@ -46,7 +45,7 @@ const StorePage: React.FC = () => {
       (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.price.toString().includes(searchQuery)) &&
-      item.price <= priceRange // Filter items by price range
+      item.price <= priceRange
     );
 
     if (sortOrder === 'low-to-high') {
@@ -59,14 +58,16 @@ const StorePage: React.FC = () => {
   }, [searchQuery, sortOrder, priceRange, items]);
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Navbar */}
-      <Navbar />
+      <div className="fixed top-0 left-0 w-full z-50">
+        <Navbar />
+      </div>
 
       {/* Store Page Content */}
-      <div className="flex mt-20">
+      <div className="flex flex-1 mt-[90px]"> {/* Adjust to match navbar height */}
         {/* Filters Section */}
-        <div className="w-1/5 p-4 bg-gray-100">
+        <div className="w-1/5 p-4 bg-gray-100 h-full">
           <h2 className="text-lg font-bold mb-4 text-orange-500">Filters</h2>
           <ul>
             <li>
@@ -91,16 +92,16 @@ const StorePage: React.FC = () => {
             type="range"
             min="0"
             max={maxPrice}
-            step="10" // Step value of $10
+            step="10"
             value={priceRange}
             onChange={(e) => setPriceRange(Number(e.target.value))}
-            className="w-full mt-2 "
+            className="w-full mt-2"
           />
-          <p className="text-sm  mt-2 text-orange-300">Selected Price: ${priceRange}</p>
+          <p className="text-sm mt-2 text-orange-300">Selected Price: ${priceRange}</p>
         </div>
 
         {/* Main Section */}
-        <div className="w-4/5 p-4 bg-white">
+        <div className="flex-1 p-4 bg-white">
           {/* Search and Sort */}
           <div className="flex justify-between items-center mb-4">
             <input
@@ -122,9 +123,9 @@ const StorePage: React.FC = () => {
           </div>
 
           {/* Items Grid */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             {filteredItems.map((item) => (
-              <div key={item.id} className="border rounded p-4 flex flex-col items-center w-96">
+              <div key={item.id} className="border rounded p-4 flex flex-col items-center">
                 <Image
                   src={item.image}
                   alt={item.name}
