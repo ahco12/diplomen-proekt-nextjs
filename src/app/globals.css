@@ -2,20 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
-  --background: #ffffff;
+  --background: #f1f1f1;
   --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f1f1f1;
+    --foreground: #171717;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Poppins', Arial, Helvetica, sans-serif; /* Ensure Poppins is applied globally */
 }

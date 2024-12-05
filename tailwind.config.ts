@@ -11,6 +11,11 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        customOrange: '#FF6B35',
+        customBlue: '#4169E1'
+      },
+      fontFamily: {
+        sans: ['Poppins', 'Arial', 'Helvetica', 'sans-serif'],
       },
     },
   },

@@ -5,7 +5,7 @@ import Navbar from '../../components/navbar'; // Import the reusable Navbar comp
 
 const GamePage: React.FC = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen">
       {/* Navigation Bar */}
       <Navbar />
       <h1 className="text-3xl font-bold text-black">Welcome to the Minigame!</h1>

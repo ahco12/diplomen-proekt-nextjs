@@ -58,7 +58,7 @@ const StorePage: React.FC = () => {
   }, [searchQuery, sortOrder, priceRange, items]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col">
       {/* Navbar */}
       <div className="fixed top-0 left-0 w-full z-50">
         <Navbar />
@@ -67,26 +67,26 @@ const StorePage: React.FC = () => {
       {/* Store Page Content */}
       <div className="flex flex-1 mt-[90px]"> {/* Adjust to match navbar height */}
         {/* Filters Section */}
-        <div className="w-1/5 p-4 bg-gray-100 h-full">
-          <h2 className="text-lg font-bold mb-4 text-orange-500">Filters</h2>
+        <div className="w-1/5 p-4 h-full">
+          <h2 className="text-lg font-bold mb-4 text-customOrange">Filters</h2>
           <ul>
             <li>
-              <label className="text-orange-500">
+              <label className="text-customOrange">
                 <input type="checkbox" />
                 Filter 1
               </label>
             </li>
             <li>
-              <label className="text-orange-500">
+              <label className="text-customOrange">
                 <input type="checkbox" />
                 Filter 2
               </label>
             </li>
           </ul>
-          <h3 className="mt-4 font-bold text-orange-500">Price Range</h3>
+          <h3 className="mt-4 font-bold text-customOrange">Price Range</h3>
           <div className="flex items-center justify-between mt-2">
-            <span className="text-orange-500">$0</span>
-            <span className="text-orange-500">${maxPrice}</span>
+            <span className="text-customOrange">$0</span>
+            <span className="text-customOrange">${maxPrice}</span>
           </div>
           <input
             type="range"
@@ -97,22 +97,22 @@ const StorePage: React.FC = () => {
             onChange={(e) => setPriceRange(Number(e.target.value))}
             className="w-full mt-2"
           />
-          <p className="text-sm mt-2 text-orange-300">Selected Price: ${priceRange}</p>
+          <p className="text-sm mt-2 text-customBlue">Selected Price: ${priceRange}</p>
         </div>
 
         {/* Main Section */}
-        <div className="flex-1 p-4 bg-white">
+        <div className="flex-1 p-4">
           {/* Search and Sort */}
           <div className="flex justify-between items-center mb-4">
             <input
               type="text"
               placeholder="Search..."
-              className="p-2 border rounded w-2/3 text-black"
+              className="p-2 border rounded-xl w-2/3 text-black"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <select
-              className="p-2 border rounded bg-white text-black"
+              className="p-2 border rounded bg-white text-customBlue"
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
             >
@@ -135,7 +135,7 @@ const StorePage: React.FC = () => {
                 />
                 <h3 className="font-bold text-md text-black">{item.name}</h3>
                 <p className="text-sm text-gray-600">{item.description}</p>
-                <p className="font-bold text-orange-500">${item.price}</p>
+                <p className="font-bold text-customOrange">${item.price}</p>
               </div>
             ))}
           </div>
