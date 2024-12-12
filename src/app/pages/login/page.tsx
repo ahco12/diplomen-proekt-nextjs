@@ -6,7 +6,7 @@ import { auth } from '../../firebase/firebaseConfig';
 import { useRouter } from 'next/navigation';
 import { collection, query, where, getDocs, getFirestore } from 'firebase/firestore';
 import Link from 'next/link'; // Import Link for client-side navigation
-import Navbar from '../../components/navbar'; // Import the reusable Navbar component
+import { FaHome } from 'react-icons/fa'; // Import the house icon
 
 const Login: React.FC = () => {
   const [input, setInput] = useState(''); // Holds either the username or email
@@ -87,8 +87,7 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <Navbar/>
+    <div className="flex justify-center items-center min-h-screen relative">
       <form onSubmit={handleLogin} className=" bg-white p-5 rounded-2xl border-2 border-gray-200 shadow-lg w-96">
         <h2 className="text-4xl font-bold mb-4 text-black">Welcome Back</h2>
         <p className="mb-8 font-medium text-lg text-gray-600">Welcome Back! Please enter your details.</p>
@@ -121,17 +120,15 @@ const Login: React.FC = () => {
         </div>
         <button
           type="submit"
-          className="w-full py-3 bg-customBlue font-bold text-lg text-white rounded-xl  disabled:bg-gray-400 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01] ease-in-out"
+          className="w-full py-3 bg-customBlue font-bold text-lg text-white rounded-xl disabled:bg-gray-400 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.03] ease-in-out"
           disabled={isLoading}
         >
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
 
-        
-
         {/* Link to register page */}
         <div className="mt-4 text-center">
-          <p className=" text-black font-medium text-base">
+          <p className="text-black font-medium text-base">
             Don&apos;t have an account?{' '}
             <Link href="../../pages/register" className="ml-2 text-customBlue hover:underline font-medium">
               Register
@@ -139,6 +136,14 @@ const Login: React.FC = () => {
           </p>
         </div>
       </form>
+
+      {/* Floating Home Button */}
+      <button
+        onClick={() => router.push('/')}
+        className="fixed bottom-10 right-10 bg-customBlue p-6 rounded-full shadow-lg text-white hover:bg-customOrange transition ease-in-out duration-300"
+      >
+        <FaHome size={28} />
+      </button>
 
       {/* Forgot Password Modal */}
       {showForgotPassword && (

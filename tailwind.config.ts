@@ -14,9 +14,6 @@ export default {
         customOrange: '#FF6B35',
         customBlue: '#4169E1'
       },
-      fontFamily: {
-        sans: ['Poppins', 'Arial', 'Helvetica', 'sans-serif'],
-      },
     },
   },
   plugins: [],

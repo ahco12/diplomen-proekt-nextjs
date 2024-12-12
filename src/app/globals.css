@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --background: #f1f1f1;
   --foreground: #171717;
@@ -18,5 +17,4 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Poppins', Arial, Helvetica, sans-serif; /* Ensure Poppins is applied globally */
 }
