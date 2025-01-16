@@ -36,18 +36,18 @@ const Navbar: React.FC = () => {
 
         {/* Play Game Button */}
         <button
-          onClick={() => handleNavigation('Play game')}
+          onClick={() => handleNavigation('game')}
           className="px-14 py-5 font-semibold bg-customGrey rounded-lg hover:bg-black transition border-gray-700"
         >
           Play game
         </button>
 
-        {/* About Button */}
+        {/* EarnMore Button */}
         <button
-          onClick={() => handleNavigation('About')}
+          onClick={() => handleNavigation('earn-more')}
           className="px-10 py-3 rounded-r-lg bg-customGrey hover:bg-black transition-all ease-in-out"
         >
-          About
+          Earn More
         </button>
       </div>
 

@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 
+
+
 export default {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -13,7 +15,10 @@ export default {
         foreground: "var(--foreground)",
         customOrange: '#FFA500',
         customBlue: '#4169E1',
-        customGrey:'#2C2C2C'
+        customGrey:'#2C2C2C',
+      },
+      fontFamily: {
+        manrope: ['var(--font-manrope', 'sans-serif'],
       },
     },
   },

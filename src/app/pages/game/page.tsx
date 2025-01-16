@@ -1,16 +1,9 @@
-'use client'; // This is a client-side component
+// app/game/page.tsx
+import { fetchQuestions } from "./fetchQuestions";
+import Quiz from "./Game";
 
-import React from 'react';
-import Navbar from '../../components/navbar'; // Import the reusable Navbar component
+export default async function GamePage() {
+  const questions = await fetchQuestions(); // Fetch questions on the server
 
-const GamePage: React.FC = () => {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      {/* Navigation Bar */}
-      <Navbar />
-      <h1 className="text-3xl font-bold text-black">Welcome to the Minigame!</h1>
-    </div>
-  );
-};
-
-export default GamePage;
+  return <Quiz questions={questions} />; // Pass questions to the client component
+}
