@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'; // Next.js router for navigation
 import { doc, setDoc, getFirestore } from 'firebase/firestore';
 import Link from 'next/link'; // Import Link for client-side navigation
 import { FaHome } from 'react-icons/fa'; // Import the house icon
+import { initializeUserPoints } from "../../firebase/firestoreUtil";
 
 
 const Register: React.FC = () => {
@@ -29,7 +30,10 @@ const Register: React.FC = () => {
         username,
         email,
       });
-  
+      
+      // Initialize the user's points field
+      await initializeUserPoints(user.uid);
+
       // Redirect to homepage after successful registration
       router.push('/'); // Navigate to the homepage
     } catch (err: unknown) {
