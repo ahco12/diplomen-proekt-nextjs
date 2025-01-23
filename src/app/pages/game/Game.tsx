@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig"; // Adjust import path if needed
 import { useAuth } from "../../components/AuthProvider"; // Assuming you have a custom hook for authentication
 
@@ -23,13 +23,14 @@ export default function Quiz({ questions }: { questions: Question[] }) {
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [showCorrect, setShowCorrect] = useState(false);
-  const [points, setPoints] = useState(0); // Current points earned during the game
-  const [initialPoints, setInitialPoints] = useState(0); // Points from Firestore
+  const [points, setPoints] = useState(0); // Points earned in-game
+  const [initialPoints, setInitialPoints] = useState(0); // Points fetched from Firestore
+  const [isGameOver, setIsGameOver] = useState(false); // Control modal visibility
   const router = useRouter();
   const { user } = useAuth(); // Get current user from authentication
 
   useEffect(() => {
-    if (user) fetchUserPoints(); // Fetch initial points from Firestore
+    if (user) fetchUserPoints();
   }, [user]);
 
   const fetchUserPoints = async () => {
@@ -38,26 +39,37 @@ export default function Quiz({ questions }: { questions: Question[] }) {
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
         const data = userDoc.data();
-        setInitialPoints(data.points || 0); // Fetch initial points
+        setInitialPoints(data.points || 0);
       }
     }
   };
 
   const handleAnswerClick = async (index: number) => {
-    if (isAnswered) return; // Prevent multiple clicks
+    if (isAnswered) return;
     setSelectedAnswerIndex(index);
     setIsAnswered(true);
 
     const currentQuestion = questions[currentIndex];
     const isCorrect = currentQuestion.answers[index].isCorrect;
 
-    // Calculate points based on difficulty
     let earnedPoints = 0;
     if (isCorrect) {
       if (currentQuestion.difficulty === "easy") earnedPoints = 50;
       if (currentQuestion.difficulty === "medium") earnedPoints = 100;
       if (currentQuestion.difficulty === "hard") earnedPoints = 200;
-      setPoints((prev) => prev + earnedPoints); // Update local points
+      setPoints((prev) => prev + earnedPoints);
+    }
+
+    // Increment questionsAnswered in Firestore
+    if (user) {
+      const userDocRef = doc(db, "users", user.uid);
+      try {
+        await updateDoc(userDocRef, {
+          questionsAnswered: increment(1), // Increment by 1
+        });
+      } catch (error) {
+        console.error("Error updating questions answered:", error);
+      }
     }
 
     if (isCorrect) {
@@ -67,40 +79,49 @@ export default function Quiz({ questions }: { questions: Question[] }) {
           setCurrentIndex(currentIndex + 1);
           resetState();
         } else {
-          savePoints(); // Save points and navigate to the main page
+          endGame(); // Trigger end-game logic
         }
       }, 1500);
     } else {
       setTimeout(() => {
         setShowCorrect(true);
         setTimeout(() => {
-          savePoints(); // Save points and navigate on incorrect answer
+          endGame(); // Trigger end-game logic
         }, 1000);
       }, 1400);
     }
-  };
-
-  const savePoints = async () => {
-    if (user) {
-      const userDocRef = doc(db, "users", user.uid);
-      try {
-        // Add initial points + earned points
-        const totalPoints = initialPoints + points;
-        await updateDoc(userDocRef, {
-          points: totalPoints,
-        });
-        console.log("Points updated successfully!");
-      } catch (error) {
-        console.error("Error updating points:", error);
-      }
-    }
-    router.push("/"); // Navigate to the main page
   };
 
   const resetState = () => {
     setSelectedAnswerIndex(null);
     setIsAnswered(false);
     setShowCorrect(false);
+  };
+
+  const endGame = async () => {
+    if (user) {
+      const userDocRef = doc(db, "users", user.uid);
+      try {
+        const totalPoints = initialPoints + points;
+        await updateDoc(userDocRef, { points: totalPoints });
+      } catch (error) {
+        console.error("Error updating points:", error);
+      }
+    }
+    setIsGameOver(true); // Show the modal
+  };
+
+  const handleRestart = () => {
+    setCurrentIndex(0);
+    setPoints(0);
+    setSelectedAnswerIndex(null);
+    setIsAnswered(false);
+    setShowCorrect(false);
+    setIsGameOver(false);
+  };
+
+  const handleMainMenu = () => {
+    router.push("/");
   };
 
   const currentQuestion = questions[currentIndex];
@@ -173,6 +194,30 @@ export default function Quiz({ questions }: { questions: Question[] }) {
           <p className="text-lg font-bold">{points}</p>
         </div>
       </div>
+
+      {/* Modal */}
+      {isGameOver && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 shadow-lg text-center">
+            <h2 className="text-2xl font-bold mb-4">Game Over</h2>
+            <p className="text-lg mb-4">You earned {points} points!</p>
+            <div className="flex space-x-4 justify-center">
+              <button
+                onClick={handleRestart}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Play Again
+              </button>
+              <button
+                onClick={handleMainMenu}
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+              >
+                Main Menu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

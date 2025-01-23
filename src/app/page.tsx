@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Navbar from './components/navbar'; // Import the reusable Navbar component
 import { useRouter } from 'next/navigation'; // Next.js router for navigation
 import { useAuth } from './components/AuthProvider'; // Your Auth context to get the user state
 
@@ -24,8 +23,6 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Navigation Bar */}
-      <Navbar />
 
       {/* Main Content */}
       <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)]">

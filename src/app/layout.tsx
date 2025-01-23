@@ -2,6 +2,7 @@ import React from 'react';
 import { AuthProvider } from './components/AuthProvider'; // Path to AuthProvider
 import './globals.css'; // Your global styles
 import { Manrope } from 'next/font/google';
+import Navbar from './components/navbar';
 
 const manrope = Manrope({
   subsets: ['latin'], // Use the subset for your language
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={manrope.className}>
       <body>
         <AuthProvider>
+          <Navbar />
           {children} {/* All page content will be wrapped by AuthProvider */}
         </AuthProvider>
       </body>

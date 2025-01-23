@@ -82,7 +82,7 @@ const Navbar: React.FC = () => {
         {/* Play Game Button */}
         <button
           onClick={handleGameNavigation}
-          className="px-14 py-5 font-semibold bg-customGrey rounded-lg hover:bg-black transition border-gray-700"
+          className="px-14 py-5 font-semibold text-xl bg-customGrey rounded-lg hover:bg-black transition border-gray-700"
         >
           Play game
         </button>
