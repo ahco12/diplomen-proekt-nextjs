@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthProvider';
 import { signOut } from 'firebase/auth';
@@ -13,6 +13,7 @@ const Navbar: React.FC = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null); // Ref for the dropdown
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -28,7 +29,25 @@ const Navbar: React.FC = () => {
     fetchUsername();
   }, [user]);
 
-  // Navigation function
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownVisible(false);
+      }
+    };
+
+    if (dropdownVisible) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    } else {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [dropdownVisible]);
+
   const handleNavigation = (link: string) => {
     if (link === 'Home') {
       router.push('/');
@@ -71,7 +90,6 @@ const Navbar: React.FC = () => {
 
       {/* Center: Navigation Links */}
       <div className="flex items-center text-customOrange rounded-full shadow-lg">
-        {/* Store Button */}
         <button
           onClick={() => handleNavigation('Store')}
           className="px-10 py-3 rounded-l-lg bg-customGrey hover:bg-black transition"
@@ -79,7 +97,6 @@ const Navbar: React.FC = () => {
           Store
         </button>
 
-        {/* Play Game Button */}
         <button
           onClick={handleGameNavigation}
           className="px-14 py-5 font-semibold text-xl bg-customGrey rounded-lg hover:bg-black transition border-gray-700"
@@ -87,7 +104,6 @@ const Navbar: React.FC = () => {
           Play game
         </button>
 
-        {/* EarnMore Button */}
         <button
           onClick={() => handleNavigation('earn-more')}
           className="px-10 py-3 rounded-r-lg bg-customGrey hover:bg-black transition-all ease-in-out"
@@ -107,7 +123,10 @@ const Navbar: React.FC = () => {
               {username || user.email}
             </button>
             {dropdownVisible && (
-              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border">
+              <div
+                ref={dropdownRef} // Attach the ref to the dropdown menu
+                className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border"
+              >
                 <button
                   onClick={() => router.push('/pages/profile')}
                   className="block px-4 py-2 text-left text-gray-700 hover:bg-gray-100 w-full"

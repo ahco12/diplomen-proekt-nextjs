@@ -43,7 +43,6 @@ export default function StorePage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [giftCardCode, setGiftCardCode] = useState("");
 
   useEffect(() => {
     fetchStoreItems();
@@ -123,7 +122,7 @@ export default function StorePage() {
       // Update local state
       setUserPoints(newPoints);
       setPointsUsed(newPointsUsed);
-      setGiftCardCode(newGiftCardCode);
+      setSelectedItem(null);
       setShowConfirmation(false);
       setShowSuccess(true);
     } catch (error) {
@@ -206,8 +205,11 @@ export default function StorePage() {
       {showSuccess && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg">
-            <h2 className="text-xl text-green-600 font-bold mb-4">Redeem Successful</h2>
-            <p>Your gift card code: <span className="font-mono">{giftCardCode}</span></p>
+            <h2 className="text-xl text-green-600 font-bold mb-4">Redemption Successful</h2>
+            <p className="text-gray-700">
+              Your item has been redeemed successfully! You can find your gift card code in your{" "}
+              <span className="font-bold">profile</span>.
+            </p>
             <div className="mt-4 flex justify-end">
               <button
                 className="px-4 py-2 bg-blue-600 text-white rounded-md"
