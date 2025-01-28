@@ -10,6 +10,9 @@ interface RedeemedItem {
   name: string;
   date: string;
   code: string;
+  pointsRequired: number;
+  description: string; // Add description property
+  uniqueId: string; // Add uniqueID property
 }
 
 export default function ProfilePage() {
@@ -40,6 +43,30 @@ export default function ProfilePage() {
         setQuestionsAnswered(userData?.questionsAnswered || 0);
         setRedeemedItems(userData?.redeemedItems || []);
       }
+    }
+  };
+
+  const fetchGiftCardDetails = async (uniqueId: string) => {
+    const giftCardDocRef = doc(db, "giftCards", uniqueId);
+    const giftCardDoc = await getDoc(giftCardDocRef);
+
+    if (giftCardDoc.exists()) {
+      return giftCardDoc.data();
+    } else {
+      throw new Error(`Gift card with unique ID ${uniqueId} does not exist.`);
+    }
+  };
+
+  const handleGiftCardClick = async (item: RedeemedItem) => {
+    try {
+      const giftCardDetails = await fetchGiftCardDetails(item.uniqueId);
+      setSelectedGiftCard({
+        ...item,
+        pointsRequired: giftCardDetails.pointsRequired,
+        description: giftCardDetails.description,
+      });
+    } catch (error) {
+      console.error("Error fetching gift card details:", error);
     }
   };
 
@@ -77,7 +104,7 @@ export default function ProfilePage() {
                 <li
                   key={item.id}
                   className="p-4 bg-gray-100 rounded-lg shadow-md flex justify-between items-center cursor-pointer hover:bg-gray-200"
-                  onClick={() => setSelectedGiftCard(item)}
+                  onClick={() => handleGiftCardClick(item)}
                 >
                   <div>
                     <h3 className="font-medium">{item.name}</h3>
@@ -102,6 +129,12 @@ export default function ProfilePage() {
             <h3 className="text-xl font-bold mb-4">Gift Card Code</h3>
             <p className="text-lg font-mono bg-gray-100 p-2 rounded-lg">
               {selectedGiftCard.code}
+            </p>
+            <p className="text-lg mt-2">
+              Points Required: {selectedGiftCard.pointsRequired}
+            </p>
+            <p className="text-lg mt-2">
+              Description: {selectedGiftCard.description}
             </p>
             <div className="mt-6 flex justify-end space-x-2">
               <button

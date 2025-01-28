@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, doc, getDoc, getDocs, updateDoc, increment } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, updateDoc, arrayUnion, increment } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig"; // Adjust path as needed
 import { useAuth } from "../../components/AuthProvider"; // Assuming you have a hook for authentication
 import Image from "next/image";
@@ -88,40 +88,40 @@ export default function StorePage() {
 
   const redeemItem = async () => {
     if (!selectedItem || !user) return;
-
+  
     const item = selectedItem;
-
+  
     if (userPoints < item.pointsRequired) {
       alert("Not enough points to redeem this item.");
       setShowConfirmation(false);
       return;
     }
-
+  
     setIsRedeeming(true);
-
+  
     const userDocRef = doc(db, "users", user.uid);
-    const newPoints = userPoints - item.pointsRequired;
-    const newPointsUsed = pointsUsed + item.pointsRequired;
     const newGiftCardCode = generateGiftCardCode();
-
+  
+    // Generate a unique ID for the redeemed gift card
+    const uniqueId = `${item.id}_${Date.now()}`;
+  
     try {
-      // Update points, pointsUsed, and redeemed items in Firestore
+      // Update Firestore: Points, pointsUsed, and add redeemed item
       await updateDoc(userDocRef, {
-        points: newPoints,
-        pointsUsed: increment(item.pointsRequired), // Increment the points used
-        redeemedItems: [
-          {
-            id: item.id,
-            name: item.name,
-            date: new Date().toISOString(),
-            giftCardCode: newGiftCardCode, // Store the gift card code
-          },
-        ],
+        points: increment(-item.pointsRequired),
+        pointsUsed: increment(item.pointsRequired),
+        redeemedItems: arrayUnion({
+          id: item.id, // Original item ID (e.g., "amazon")
+          uniqueId, // Unique ID generated with timestamp
+          name: item.name,
+          date: new Date().toISOString(),
+          giftCardCode: newGiftCardCode,
+        }),
       });
-
+  
       // Update local state
-      setUserPoints(newPoints);
-      setPointsUsed(newPointsUsed);
+      setUserPoints(userPoints - item.pointsRequired);
+      setPointsUsed(pointsUsed + item.pointsRequired);
       setSelectedItem(null);
       setShowConfirmation(false);
       setShowSuccess(true);
@@ -131,6 +131,7 @@ export default function StorePage() {
       setIsRedeeming(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
@@ -205,7 +206,9 @@ export default function StorePage() {
       {showSuccess && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg">
-            <h2 className="text-xl text-green-600 font-bold mb-4">Redemption Successful</h2>
+            <h2 className="text-xl text-green-600 font-bold mb-4">
+              Redemption Successful
+            </h2>
             <p className="text-gray-700">
               Your item has been redeemed successfully! You can find your gift card code in your{" "}
               <span className="font-bold">profile</span>.
