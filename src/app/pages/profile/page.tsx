@@ -47,15 +47,36 @@ export default function ProfilePage() {
   };
 
   const fetchGiftCardDetails = async (uniqueId: string) => {
-    const giftCardDocRef = doc(db, "giftCards", uniqueId);
-    const giftCardDoc = await getDoc(giftCardDocRef);
-
-    if (giftCardDoc.exists()) {
-      return giftCardDoc.data();
-    } else {
-      throw new Error(`Gift card with unique ID ${uniqueId} does not exist.`);
+    console.log("Extracted baseId:", uniqueId);
+  
+    try {
+      // Fetch the 'billa' document instead
+      const billaDocRef = doc(db, "storeItems", "billa");
+      console.log("Fetching document from Firestore:", billaDocRef.path);
+  
+      const billaDoc = await getDoc(billaDocRef);
+  
+      if (billaDoc.exists()) {
+        const giftCardData = billaDoc.data(); // Get the entire document
+        console.log("Gift card data:", giftCardData);
+  
+        if (giftCardData.id === uniqueId) {
+          console.log(`Gift card found: ${uniqueId}`, giftCardData);
+          return giftCardData;
+        } else {
+          console.error(`Gift card with ID ${uniqueId} does not exist inside 'billa'.`);
+          throw new Error(`Gift card with ID ${uniqueId} does not exist inside 'billa'.`);
+        }
+      } else {
+        console.error("Document 'billa' does not exist in storeItems.");
+        throw new Error("Document 'billa' does not exist in storeItems.");
+      }
+    } catch (error) {
+      console.error("Error fetching gift card:", error);
+      throw error;
     }
   };
+  
 
   const handleGiftCardClick = async (item: RedeemedItem) => {
     try {
@@ -102,7 +123,7 @@ export default function ProfilePage() {
             <ul className="space-y-4">
               {redeemedItems.map((item) => (
                 <li
-                  key={item.id}
+                  key={item.uniqueId}
                   className="p-4 bg-gray-100 rounded-lg shadow-md flex justify-between items-center cursor-pointer hover:bg-gray-200"
                   onClick={() => handleGiftCardClick(item)}
                 >
@@ -124,29 +145,32 @@ export default function ProfilePage() {
 
       {/* Gift Card Modal */}
       {selectedGiftCard && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
-            <h3 className="text-xl font-bold mb-4">Gift Card Code</h3>
-            <p className="text-lg font-mono bg-gray-100 p-2 rounded-lg">
-              {selectedGiftCard.code}
-            </p>
-            <p className="text-lg mt-2">
-              Points Required: {selectedGiftCard.pointsRequired}
-            </p>
-            <p className="text-lg mt-2">
-              Description: {selectedGiftCard.description}
-            </p>
-            <div className="mt-6 flex justify-end space-x-2">
-              <button
-                onClick={() => setSelectedGiftCard(null)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"
-              >
-                Close
-              </button>
-            </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
+          <h3 className="text-xl font-bold mb-4">Gift Card Details</h3>
+          
+          <p className="text-lg font-mono bg-gray-100 p-2 rounded-lg">
+            Code: {selectedGiftCard.code ?? "Not Available"}
+          </p>
+          <p className="text-lg mt-2">
+            Points Required: {selectedGiftCard.pointsRequired ?? "Unknown"}
+          </p>
+          <p className="text-lg mt-2">
+            Description: {selectedGiftCard.description ?? "No description available"}
+          </p>
+
+          <div className="mt-6 flex justify-end space-x-2">
+            <button
+              onClick={() => setSelectedGiftCard(null)}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"
+            >
+              Close
+            </button>
           </div>
         </div>
-      )}
+      </div>
+    )}
+
     </div>
   );
 }
