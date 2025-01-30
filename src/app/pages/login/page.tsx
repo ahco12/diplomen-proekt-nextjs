@@ -4,12 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfig';
 import { useRouter } from 'next/navigation';
-import { collection, query, where, getDocs, getFirestore } from 'firebase/firestore';
 import Link from 'next/link'; // Import Link for client-side navigation
 import { FaHome } from 'react-icons/fa'; // Import the house icon
 
 const Login: React.FC = () => {
-  const [input, setInput] = useState(''); // Holds either the username or email
+  const [email, setEmail] = useState(''); // Holds the email
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false); // Track if we're on the client
@@ -18,7 +17,6 @@ const Login: React.FC = () => {
   const [resetEmail, setResetEmail] = useState(''); // Email for password reset
   const [successMessage, setSuccessMessage] = useState(''); // Success message for password reset
   const router = useRouter();
-  const db = getFirestore();
 
   useEffect(() => {
     setIsClient(true);
@@ -30,22 +28,8 @@ const Login: React.FC = () => {
     setError(''); // Clear previous errors
 
     try {
-      let emailToUse = input;
-
-      if (!input.includes('@')) {
-        // Treat input as a username, query Firestore
-        const userQuery = query(collection(db, 'users'), where('username', '==', input));
-        const querySnapshot = await getDocs(userQuery);
-
-        if (!querySnapshot.empty) {
-          emailToUse = querySnapshot.docs[0].data().email; // Fetch associated email
-        } else {
-          throw new Error('Username not found');
-        }
-      }
-
-      // Sign in with the resolved email
-      await signInWithEmailAndPassword(auth, emailToUse, password);
+      // Sign in with email and password
+      await signInWithEmailAndPassword(auth, email, password);
 
       // Navigate to the homepage after successful login
       router.push('/');
@@ -88,18 +72,19 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen relative">
-      <form onSubmit={handleLogin} className=" bg-white p-5 rounded-2xl border-2 border-gray-200 shadow-lg w-96">
+      <form onSubmit={handleLogin} className="bg-white p-5 rounded-2xl border-2 border-gray-200 shadow-lg w-96">
         <h2 className="text-4xl font-bold mb-4 text-black">Welcome Back</h2>
         <p className="mb-8 font-medium text-lg text-gray-600">Welcome Back! Please enter your details.</p>
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         {successMessage && <p className="text-green-500 text-sm mb-2">{successMessage}</p>}
 
         <input
-          type="text"
-          placeholder="Username or Email"
+          type="email"
+          placeholder="Email"
           className="w-full p-3 mb-4 border-2 border-gray-100 rounded-xl text-black bg-transparent"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <input
           type="password"
@@ -107,6 +92,7 @@ const Login: React.FC = () => {
           className="w-full p-3 mb-4 border-2 border-gray-100 rounded-xl text-black bg-transparent"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
         {/* Forgot Password Link */}
         <div className="mb-4 text-start">
@@ -158,6 +144,7 @@ const Login: React.FC = () => {
                 className="w-full p-3 mb-4 border rounded text-black"
                 value={resetEmail}
                 onChange={(e) => setResetEmail(e.target.value)}
+                required
               />
               <div className="flex justify-between">
                 <button

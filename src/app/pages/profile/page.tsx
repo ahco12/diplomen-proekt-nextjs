@@ -6,13 +6,13 @@ import { db } from "../../firebase/firebaseConfig"; // Adjust path if needed
 import { useAuth } from "../../components/AuthProvider"; // Adjust path if needed
 
 interface RedeemedItem {
-  id: string;
+  id: string; // Nested map key (e.g., "amazon_card_10")
   name: string;
   date: string;
-  code: string;
-  pointsRequired: number;
-  description: string; // Add description property
-  uniqueId: string; // Add uniqueID property
+  giftCardCode: string;
+  pointsRequired?: number;
+  description?: string;
+  uniqueId: string;
 }
 
 export default function ProfilePage() {
@@ -31,7 +31,9 @@ export default function ProfilePage() {
   }, [user]);
 
   const fetchUserProfile = async () => {
-    if (user) {
+    if (!user) return;
+
+    try {
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
 
@@ -43,48 +45,49 @@ export default function ProfilePage() {
         setQuestionsAnswered(userData?.questionsAnswered || 0);
         setRedeemedItems(userData?.redeemedItems || []);
       }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
     }
   };
 
-  const fetchGiftCardDetails = async (uniqueId: string) => {
-    console.log("Extracted baseId:", uniqueId);
-  
+  const fetchGiftCardDetails = async (id: string) => {
     try {
-      // Fetch the 'billa' document instead
-      const billaDocRef = doc(db, "storeItems", "billa");
-      console.log("Fetching document from Firestore:", billaDocRef.path);
-  
-      const billaDoc = await getDoc(billaDocRef);
-  
-      if (billaDoc.exists()) {
-        const giftCardData = billaDoc.data(); // Get the entire document
-        console.log("Gift card data:", giftCardData);
-  
-        if (giftCardData.id === uniqueId) {
-          console.log(`Gift card found: ${uniqueId}`, giftCardData);
-          return giftCardData;
+      // Extract company name (first part of the ID) e.g., "billa" from "billa_card_10"
+      const companyName = id.split("_")[0];
+      console.log(`Extracted company: ${companyName}`);
+
+      const companyDocRef = doc(db, "storeItems", companyName);
+      console.log("Fetching document from Firestore:", companyDocRef.path);
+
+      const companyDoc = await getDoc(companyDocRef);
+
+      if (companyDoc.exists()) {
+        const giftCards = companyDoc.data(); // Entire document contains all gift cards
+
+        if (giftCards && giftCards[id]) {
+          console.log(`Gift card found: ${id}`, giftCards[id]);
+          return giftCards[id]; // Return gift card details
         } else {
-          console.error(`Gift card with ID ${uniqueId} does not exist inside 'billa'.`);
-          throw new Error(`Gift card with ID ${uniqueId} does not exist inside 'billa'.`);
+          console.error(`Gift card with ID ${id} does not exist inside '${companyName}'.`);
+          throw new Error(`Gift card with ID ${id} does not exist inside '${companyName}'.`);
         }
       } else {
-        console.error("Document 'billa' does not exist in storeItems.");
-        throw new Error("Document 'billa' does not exist in storeItems.");
+        console.error(`Company '${companyName}' does not exist in storeItems.`);
+        throw new Error(`Company '${companyName}' does not exist in storeItems.`);
       }
     } catch (error) {
       console.error("Error fetching gift card:", error);
       throw error;
     }
   };
-  
 
   const handleGiftCardClick = async (item: RedeemedItem) => {
     try {
-      const giftCardDetails = await fetchGiftCardDetails(item.uniqueId);
+      const giftCardDetails = await fetchGiftCardDetails(item.id);
       setSelectedGiftCard({
-        ...item,
-        pointsRequired: giftCardDetails.pointsRequired,
-        description: giftCardDetails.description,
+        ...item, // Keep 'code' from users collection
+        pointsRequired: giftCardDetails?.pointsRequired ?? item.pointsRequired,
+        description: giftCardDetails?.description ?? item.description,
       });
     } catch (error) {
       console.error("Error fetching gift card details:", error);
@@ -145,32 +148,31 @@ export default function ProfilePage() {
 
       {/* Gift Card Modal */}
       {selectedGiftCard && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
-          <h3 className="text-xl font-bold mb-4">Gift Card Details</h3>
-          
-          <p className="text-lg font-mono bg-gray-100 p-2 rounded-lg">
-            Code: {selectedGiftCard.code ?? "Not Available"}
-          </p>
-          <p className="text-lg mt-2">
-            Points Required: {selectedGiftCard.pointsRequired ?? "Unknown"}
-          </p>
-          <p className="text-lg mt-2">
-            Description: {selectedGiftCard.description ?? "No description available"}
-          </p>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
+            <h3 className="text-xl font-bold mb-4">Gift Card Details</h3>
 
-          <div className="mt-6 flex justify-end space-x-2">
-            <button
-              onClick={() => setSelectedGiftCard(null)}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"
-            >
-              Close
-            </button>
+            <p className="text-lg font-mono bg-gray-100 p-2 rounded-lg">
+              Code: {selectedGiftCard.giftCardCode ?? "Not Available"}
+            </p>
+            <p className="text-lg mt-2">
+              Bought for: {selectedGiftCard.pointsRequired ?? "Unknown"}
+            </p>
+            <p className="text-lg mt-2">
+              Description: {selectedGiftCard.description ?? "No description available"}
+            </p>
+
+            <div className="mt-6 flex justify-end space-x-2">
+              <button
+                onClick={() => setSelectedGiftCard(null)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
-
+      )}
     </div>
   );
 }

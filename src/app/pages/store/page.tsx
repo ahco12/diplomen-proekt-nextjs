@@ -7,10 +7,10 @@ import { useAuth } from "../../components/AuthProvider"; // Assuming you have a 
 import Image from "next/image";
 
 interface StoreItem {
-  id: string;
+  id: string; // Unique ID for the item (e.g., "amazon_card_10")
   name: string;
   pointsRequired: number;
-  image: string;
+  image: string; // Image field is outside the nested map
   description?: string;
 }
 
@@ -59,10 +59,27 @@ export default function StorePage() {
 
   const fetchStoreItems = async () => {
     const querySnapshot = await getDocs(collection(db, "storeItems"));
-    const items: StoreItem[] = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as StoreItem[];
+    const items: StoreItem[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const documentData = doc.data(); // Get the document data (e.g., "amazon")
+      const image = documentData.image || ""; // Image field is outside the nested map
+
+      // Iterate over the nested maps (e.g., "amazon_card_10")
+      Object.keys(documentData).forEach((key) => {
+        if (key !== "image") { // Skip the "image" field since it's outside the nested map
+          const nestedMap = documentData[key]; // Access the nested map (e.g., "amazon_card_10")
+          items.push({
+            id: key, // Use the nested map key directly (e.g., "amazon_card_10")
+            name: nestedMap.name || "Unnamed Item", // Access the "name" field from the nested map
+            pointsRequired: nestedMap.pointsRequired || 0, // Access the "pointsRequired" field
+            image, // Use the image field from the document
+            description: nestedMap.description || "", // Access the "description" field
+          });
+        }
+      });
+    });
+
     setStoreItems(items);
     setFilteredItems(items);
   };
@@ -88,37 +105,37 @@ export default function StorePage() {
 
   const redeemItem = async () => {
     if (!selectedItem || !user) return;
-  
+
     const item = selectedItem;
-  
+
     if (userPoints < item.pointsRequired) {
       alert("Not enough points to redeem this item.");
       setShowConfirmation(false);
       return;
     }
-  
+
     setIsRedeeming(true);
-  
+
     const userDocRef = doc(db, "users", user.uid);
     const newGiftCardCode = generateGiftCardCode();
-  
+
     // Generate a unique ID for the redeemed gift card
     const uniqueId = `${item.id}_${Date.now()}`;
-  
+
     try {
       // Update Firestore: Points, pointsUsed, and add redeemed item
       await updateDoc(userDocRef, {
         points: increment(-item.pointsRequired),
         pointsUsed: increment(item.pointsRequired),
         redeemedItems: arrayUnion({
-          id: item.id, // Original item ID (e.g., "amazon")
+          id: item.id, // Use the nested map key directly (e.g., "amazon_card_10")
           uniqueId, // Unique ID generated with timestamp
           name: item.name,
           date: new Date().toISOString(),
           giftCardCode: newGiftCardCode,
         }),
       });
-  
+
       // Update local state
       setUserPoints(userPoints - item.pointsRequired);
       setPointsUsed(pointsUsed + item.pointsRequired);
@@ -131,7 +148,6 @@ export default function StorePage() {
       setIsRedeeming(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
@@ -158,7 +174,7 @@ export default function StorePage() {
           >
             <Image
               src={item.image}
-              alt={item.name}
+              alt={item.name || "Store Item"} // Provide a fallback if item.name is missing
               width={150}
               height={100}
               className="mb-4"
