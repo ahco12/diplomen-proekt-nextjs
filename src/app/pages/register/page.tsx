@@ -1,12 +1,12 @@
-'use client'; // This is a client-side component
+'use client';
 
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase/firebaseConfig'; // Adjust this path to your Firebase configuration
-import { useRouter } from 'next/navigation'; // Next.js router for navigation
-import Link from 'next/link'; // Import Link for client-side navigation
-import { FaHome } from 'react-icons/fa'; // Import the house icon
-import { initializeUserPoints } from "../../firebase/firestoreUtil";
+import { doc, setDoc } from 'firebase/firestore'; // Import Firestore functions
+import { auth, db } from '../../firebase/firebaseConfig'; // Import both auth and db from your Firebase config
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { FaHome } from 'react-icons/fa';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -17,21 +17,30 @@ const Register: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Create user with email and password
+      // Step 1: Create user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      console.log("User registered successfully:", user.uid);
 
-      // Initialize the user's points field
-      await initializeUserPoints(user.uid);
+      // Step 2: Create user document in Firestore
+      const userDocRef = doc(db, 'users', user.uid); // Reference to the user document
+      await setDoc(userDocRef, {
+        email: email, // Save the user's email
+        points: 0, // Initialize points to 0
+        pointsUsed: 0, // Initialize pointsUsed to 0
+        createdAt: new Date(), // Optional: Add a timestamp for when the user was created
+      });
+      console.log("User document created in Firestore.");
 
-      // Redirect to homepage after successful registration
-      router.push('/'); // Navigate to the homepage
+      // Step 3: Redirect to homepage
+      router.push('/');
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
         setError('An unexpected error occurred');
       }
+      console.error("Registration error:", err);
     }
   };
 
