@@ -20,6 +20,15 @@ export default {
       fontFamily: {
         manrope: ['var(--font-manrope', 'sans-serif'],
       },
+      keyframes: {
+        float: {
+          '0%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { transform: 'translateY(-50px)', opacity: '0' },
+        },
+      },
+      animation: {
+        float: 'float 1s ease-in-out',
+      },
     },
   },
   plugins: [],

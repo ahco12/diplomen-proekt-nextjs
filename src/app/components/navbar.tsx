@@ -4,29 +4,32 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthProvider';
 import { signOut } from 'firebase/auth';
-import { auth, db } from '../firebase/firebaseConfig'; // Firebase auth and Firestore
+import { auth } from '../firebase/firebaseConfig';
+import { FaUserCircle } from 'react-icons/fa';
 import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase/firebaseConfig'; // Import Firestore
 
 const Navbar: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null); // Ref for the dropdown
+  const [isAdmin, setIsAdmin] = useState(false); // State to track admin status
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Fetch user role from Firestore
   useEffect(() => {
-    const fetchUsername = async () => {
+    const checkAdminStatus = async () => {
       if (user) {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setUsername(userDoc.data().username);
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setIsAdmin(userSnap.data().role === 'admin'); // Check if the role is "admin"
         }
       }
     };
 
-    fetchUsername();
+    checkAdminStatus();
   }, [user]);
 
   // Close dropdown when clicking outside
@@ -66,9 +69,9 @@ const Navbar: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Log out the user
-      setShowLogoutModal(false); // Close the modal
-      router.push('../'); // Redirect to home page
+      await signOut(auth);
+      setShowLogoutModal(false);
+      router.push('../');
     } catch (err) {
       console.error('Error logging out:', err);
     }
@@ -80,7 +83,6 @@ const Navbar: React.FC = () => {
 
   return (
     <div className="bg-orange-500 py-4 px-8 flex justify-between items-center">
-      {/* Left Side: Logo */}
       <button
         onClick={() => handleNavigation('Home')}
         className="text-customGrey font-bold text-xl border-2 border-customGrey rounded-lg px-4 py-2 hover:text-black hover:border-black transition ease-in-out duration-300"
@@ -88,7 +90,6 @@ const Navbar: React.FC = () => {
         Learn & Earn
       </button>
 
-      {/* Center: Navigation Links */}
       <div className="flex items-center text-customOrange rounded-full shadow-lg">
         <button
           onClick={() => handleNavigation('Store')}
@@ -120,11 +121,11 @@ const Navbar: React.FC = () => {
               onClick={() => setDropdownVisible((prev) => !prev)}
               className="px-5 py-3 text-black border-2 border-black rounded-lg hover:bg-black hover:text-customOrange transition ease-in-out duration-300"
             >
-              {username || user.email}
+              <FaUserCircle className="text-2xl" />
             </button>
             {dropdownVisible && (
               <div
-                ref={dropdownRef} // Attach the ref to the dropdown menu
+                ref={dropdownRef}
                 className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border"
               >
                 <button
@@ -133,6 +134,17 @@ const Navbar: React.FC = () => {
                 >
                   Profile
                 </button>
+
+                {/* Admin Page Link (Only for Admins) */}
+                {isAdmin && (
+                  <button
+                    onClick={() => router.push('/pages/admin')}
+                    className="block px-4 py-2 text-left text-gray-700 hover:bg-gray-100 w-full"
+                  >
+                    Admin Page
+                  </button>
+                )}
+
                 <button
                   onClick={() => setShowLogoutModal(true)}
                   className="block px-4 py-2 text-left text-gray-700 hover:bg-gray-100 w-full"

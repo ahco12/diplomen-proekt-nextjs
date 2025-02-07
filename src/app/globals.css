@@ -18,3 +18,25 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.temp-points {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: bold;
+  color: green;
+  animation: fadeOut 3.4s ease-out forwards;
+}

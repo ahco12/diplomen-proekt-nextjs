@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { collection, getDocs, orderBy, query, where, limit as firestoreLimit } from "firebase/firestore";
 import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig"; // Adjust import path if needed
-import { useAuth } from "../../components/AuthProvider"; // Assuming you have a custom hook for authentication
+import { db } from "../../firebase/firebaseConfig";
+import { useAuth } from "../../components/AuthProvider";
 
 interface Answer {
   answer: string;
@@ -18,33 +19,83 @@ interface Question {
   answers: Answer[];
 }
 
-export default function Quiz({ questions }: { questions: Question[] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+export default function Quiz() {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
-  const [isAnswered, setIsAnswered] = useState(false);
-  const [showCorrect, setShowCorrect] = useState(false);
-  const [points, setPoints] = useState(0); // Points earned in-game
-  const [initialPoints, setInitialPoints] = useState(0); // Points fetched from Firestore
-  const [isGameOver, setIsGameOver] = useState(false); // Control modal visibility
+  const [isAnswered, setIsAnswered] = useState<boolean>(false);
+  const [showCorrect, setShowCorrect] = useState<boolean>(false);
+  const [points, setPoints] = useState<number>(0);
+  const [initialPoints, setInitialPoints] = useState<number>(0);
+  const [tempPoints, setTempPoints] = useState<number>(0);
+  const [pointsInterval, setPointsInterval] = useState<NodeJS.Timeout | null>(null);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const router = useRouter();
-  const { user } = useAuth(); // Get current user from authentication
+  const { user } = useAuth();
+
+  useEffect(() => {
+    fetchNewQuestions();
+  }, []);
 
   useEffect(() => {
     if (user) fetchUserPoints();
   }, [user]);
 
-  const fetchUserPoints = async () => {
+  useEffect(() => {
+    return () => {
+      if (pointsInterval) {
+        clearInterval(pointsInterval);
+      }
+    };
+  }, [pointsInterval]);
+
+  const fetchUserPoints = async (): Promise<void> => {
     if (user) {
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
-        const data = userDoc.data();
-        setInitialPoints(data.points || 0);
+        setInitialPoints(userDoc.data().points || 0);
       }
     }
   };
 
-  const handleAnswerClick = async (index: number) => {
+  const fetchNewQuestions = async () => {
+    try {
+      const fetchQuestions = async (difficulty: string, limit: number): Promise<Question[]> => {
+        // Query Firestore and order by randomField
+        const q = query(
+          collection(db, "questions"),
+          where("difficulty", "==", difficulty),
+          orderBy("randomField"), // Sort by precomputed random field
+          firestoreLimit(15) // Fetch more than needed for extra randomness
+        );
+        
+        const snapshot = await getDocs(q);
+        const allQuestions = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          question: doc.data().question,
+          difficulty: doc.data().difficulty,
+          answers: doc.data().answers,
+        }));
+  
+        // Shuffle and take only the required number
+        return allQuestions.sort(() => Math.random() - 0.5).slice(0, limit);
+      };
+  
+      // Fetch different levels of questions
+      const easyQuestions = await fetchQuestions("easy", 5);
+      const mediumQuestions = await fetchQuestions("medium", 5);
+      const hardQuestions = await fetchQuestions("hard", 5);
+  
+      // Shuffle all questions again to ensure randomness
+      setQuestions([...easyQuestions, ...mediumQuestions, ...hardQuestions].sort(() => Math.random() - 0.5));
+      setCurrentIndex(0);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
+  };
+
+  const handleAnswerClick = async (index: number): Promise<void> => {
     if (isAnswered) return;
     setSelectedAnswerIndex(index);
     setIsAnswered(true);
@@ -57,15 +108,30 @@ export default function Quiz({ questions }: { questions: Question[] }) {
       if (currentQuestion.difficulty === "easy") earnedPoints = 50;
       if (currentQuestion.difficulty === "medium") earnedPoints = 100;
       if (currentQuestion.difficulty === "hard") earnedPoints = 200;
-      setPoints((prev) => prev + earnedPoints);
+
+      setTempPoints(earnedPoints); // Set temporary points
+
+      // Start incrementing points one by one
+      let currentIncrement = 0;
+      const interval = setInterval(() => {
+        setPoints((prev) => {
+          currentIncrement++;
+          if (currentIncrement >= earnedPoints) {
+            clearInterval(interval); // Stop the interval when the full amount is added
+            setTempPoints(0); // Reset temporary points after animation
+          }
+          return prev + 1;
+        });
+      }, 10); // Adjust the interval duration for faster or slower increments
+
+      setPointsInterval(interval); // Store the interval ID
     }
 
-    // Increment questionsAnswered in Firestore
     if (user) {
       const userDocRef = doc(db, "users", user.uid);
       try {
         await updateDoc(userDocRef, {
-          questionsAnswered: increment(1), // Increment by 1
+          questionsAnswered: increment(1),
         });
       } catch (error) {
         console.error("Error updating questions answered:", error);
@@ -79,26 +145,26 @@ export default function Quiz({ questions }: { questions: Question[] }) {
           setCurrentIndex(currentIndex + 1);
           resetState();
         } else {
-          endGame(); // Trigger end-game logic
+          endGame();
         }
       }, 1500);
     } else {
       setTimeout(() => {
         setShowCorrect(true);
         setTimeout(() => {
-          endGame(); // Trigger end-game logic
+          endGame();
         }, 1000);
       }, 1400);
     }
   };
 
-  const resetState = () => {
+  const resetState = (): void => {
     setSelectedAnswerIndex(null);
     setIsAnswered(false);
     setShowCorrect(false);
   };
 
-  const endGame = async () => {
+  const endGame = async (): Promise<void> => {
     if (user) {
       const userDocRef = doc(db, "users", user.uid);
       try {
@@ -108,37 +174,40 @@ export default function Quiz({ questions }: { questions: Question[] }) {
         console.error("Error updating points:", error);
       }
     }
-    setIsGameOver(true); // Show the modal
+    setIsGameOver(true);
   };
 
-  const handleRestart = () => {
-    setCurrentIndex(0);
+  const handleRestart = (): void => {
+    if (pointsInterval) {
+      clearInterval(pointsInterval);
+    }
     setPoints(0);
     setSelectedAnswerIndex(null);
     setIsAnswered(false);
     setShowCorrect(false);
     setIsGameOver(false);
+    fetchNewQuestions();
   };
 
-  const handleMainMenu = () => {
+  const handleMainMenu = (): void => {
     router.push("/");
   };
+
+  if (questions.length === 0) {
+    return <div className="text-white text-center">Loading questions...</div>;
+  }
 
   const currentQuestion = questions[currentIndex];
 
   return (
     <div className="min-h-screen flex">
-      {/* Main Quiz Area */}
+      {/* Main Game Section */}
       <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-b from-black to-gray-900 text-white p-4">
         <h1 className="text-4xl font-bold mb-8 text-center">Who Wants to Be a Millionaire?</h1>
-
-        {/* Question Area */}
         <div className="bg-blue-800 text-center text-lg font-semibold p-6 rounded-md shadow-lg border-4 border-blue-400 w-full max-w-3xl">
           <p className="mb-4">Question {currentIndex + 1}</p>
           <h2 className="text-2xl">{currentQuestion.question}</h2>
         </div>
-
-        {/* Answers Area */}
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 w-full max-w-3xl">
           {currentQuestion.answers.map((answer, index) => {
             const isSelected = selectedAnswerIndex === index;
@@ -189,9 +258,12 @@ export default function Quiz({ questions }: { questions: Question[] }) {
         </ul>
 
         {/* Points Tracker */}
-        <div className="mt-4 p-4 bg-gray-700 rounded-md text-center">
+        <div className="mt-4 p-4 bg-gray-700 rounded-md text-center relative">
           <h3 className="text-md font-semibold">Points</h3>
           <p className="text-lg font-bold">{points}</p>
+          {tempPoints > 0 && (
+            <div className="temp-points">+{tempPoints}</div>
+          )}
         </div>
       </div>
 

@@ -1,46 +1,51 @@
-'use client';
+"use client"; // Add this at the very top
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { auth } from '../firebase/firebaseConfig'; // Adjust the path to match your Firebase config
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { createContext, useContext, useEffect, useState } from "react";
+import { auth, db } from "../firebase/firebaseConfig";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 interface AuthContextType {
   user: User | null;
+  role: string | null;
   loading: boolean;
 }
 
-// Define the prop types for the AuthProvider component
-interface AuthProviderProps {
-  children: ReactNode; // This will allow any valid React child (string, element, etc.)
-}
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  role: null,
+  loading: true,
+});
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [role, setRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        setUser(user);
-        setLoading(false);
-      });
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setUser(user);
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setRole(userDoc.data().role || null);
+        }
+      } else {
+        setRole(null);
+      }
+      setLoading(false);
+    });
 
-      return () => unsubscribe();
-    }
+    return () => unsubscribe();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {loading ? <div>Loading...</div> : children}
+    <AuthContext.Provider value={{ user, role, loading }}>
+      {children}
     </AuthContext.Provider>
   );
-};
+}
 
-// Custom hook to use the AuthContext
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
-};
+export function useAuth() {
+  return useContext(AuthContext);
+}
