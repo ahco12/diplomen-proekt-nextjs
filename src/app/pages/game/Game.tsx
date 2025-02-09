@@ -94,6 +94,7 @@ export default function Quiz() {
       console.error("Error fetching questions:", error);
     }
   };
+  
 
   const handleAnswerClick = async (index: number): Promise<void> => {
     if (isAnswered) return;
