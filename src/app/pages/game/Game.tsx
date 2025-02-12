@@ -28,7 +28,7 @@ export default function Quiz() {
   const [points, setPoints] = useState<number>(0);
   const [initialPoints, setInitialPoints] = useState<number>(0);
   const [tempPoints, setTempPoints] = useState<number>(0);
-  const [pointsInterval, setPointsInterval] = useState<NodeJS.Timeout | null>(null);
+  const [pointsInterval] = useState<NodeJS.Timeout | null>(null);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const router = useRouter();
   const { user } = useAuth();
@@ -62,72 +62,55 @@ export default function Quiz() {
   const fetchNewQuestions = async () => {
     try {
       const fetchQuestions = async (difficulty: string, limit: number): Promise<Question[]> => {
-        // Query Firestore and order by randomField
         const q = query(
           collection(db, "questions"),
           where("difficulty", "==", difficulty),
           orderBy("randomField"), // Sort by precomputed random field
-          firestoreLimit(15) // Fetch more than needed for extra randomness
+          firestoreLimit(limit) // Fetch only required number
         );
         
         const snapshot = await getDocs(q);
-        const allQuestions = snapshot.docs.map((doc) => ({
+        return snapshot.docs.map((doc) => ({
           id: doc.id,
           question: doc.data().question,
           difficulty: doc.data().difficulty,
           answers: doc.data().answers,
         }));
-  
-        // Shuffle and take only the required number
-        return allQuestions.sort(() => Math.random() - 0.5).slice(0, limit);
       };
   
-      // Fetch different levels of questions
+      // Fetch different difficulty levels
       const easyQuestions = await fetchQuestions("easy", 5);
       const mediumQuestions = await fetchQuestions("medium", 5);
       const hardQuestions = await fetchQuestions("hard", 5);
   
-      // Shuffle all questions again to ensure randomness
-      setQuestions([...easyQuestions, ...mediumQuestions, ...hardQuestions].sort(() => Math.random() - 0.5));
+      // **Keep the correct order** (No shuffle after merging)
+      setQuestions([...easyQuestions, ...mediumQuestions, ...hardQuestions]);
       setCurrentIndex(0);
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
   };
   
+  
 
   const handleAnswerClick = async (index: number): Promise<void> => {
     if (isAnswered) return;
     setSelectedAnswerIndex(index);
     setIsAnswered(true);
-
+  
     const currentQuestion = questions[currentIndex];
     const isCorrect = currentQuestion.answers[index].isCorrect;
-
+  
     let earnedPoints = 0;
     if (isCorrect) {
       if (currentQuestion.difficulty === "easy") earnedPoints = 50;
       if (currentQuestion.difficulty === "medium") earnedPoints = 100;
       if (currentQuestion.difficulty === "hard") earnedPoints = 200;
-
-      setTempPoints(earnedPoints); // Set temporary points
-
-      // Start incrementing points one by one
-      let currentIncrement = 0;
-      const interval = setInterval(() => {
-        setPoints((prev) => {
-          currentIncrement++;
-          if (currentIncrement >= earnedPoints) {
-            clearInterval(interval); // Stop the interval when the full amount is added
-            setTempPoints(0); // Reset temporary points after animation
-          }
-          return prev + 1;
-        });
-      }, 10); // Adjust the interval duration for faster or slower increments
-
-      setPointsInterval(interval); // Store the interval ID
+  
+      setTempPoints(earnedPoints); // Display temporary points
+      setPoints((prev) => prev + earnedPoints); // Update points immediately
     }
-
+  
     if (user) {
       const userDocRef = doc(db, "users", user.uid);
       try {
@@ -138,12 +121,12 @@ export default function Quiz() {
         console.error("Error updating questions answered:", error);
       }
     }
-
+  
     if (isCorrect) {
       setShowCorrect(true);
       setTimeout(() => {
         if (currentIndex < questions.length - 1) {
-          setCurrentIndex(currentIndex + 1);
+          setCurrentIndex((prev) => prev + 1);
           resetState();
         } else {
           endGame();
@@ -158,6 +141,8 @@ export default function Quiz() {
       }, 1400);
     }
   };
+  
+
 
   const resetState = (): void => {
     setSelectedAnswerIndex(null);
