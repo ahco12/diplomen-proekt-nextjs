@@ -1,14 +1,14 @@
 import React from 'react';
-import { AuthProvider } from './components/AuthProvider'; // Path to AuthProvider
-import './globals.css'; // Your global styles
+import { AuthProvider } from './components/AuthProvider'; // Path to your AuthProvider
+import './globals.css';
 import { Manrope } from 'next/font/google';
-import Navbar from './components/navbar';
+
+import NavbarWrapper from './components/NavbarWrapper'; // <-- Import our wrapper
 
 const manrope = Manrope({
-  subsets: ['latin'], // Use the subset for your language
-  weight: ['400', '500', '700'], // Include weights as needed (e.g., Regular, Medium, Bold)
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
 });
-
 
 export const metadata = {
   title: 'Learn & Earn',
@@ -20,8 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={manrope.className}>
       <body>
         <AuthProvider>
-          <Navbar />
-          {children} {/* All page content will be wrapped by AuthProvider */}
+          {/* The NavbarWrapper will decide whether to display the actual <Navbar /> */}
+          <NavbarWrapper />
+          {children}
         </AuthProvider>
       </body>
     </html>

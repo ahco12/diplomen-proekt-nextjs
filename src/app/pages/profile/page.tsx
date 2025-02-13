@@ -32,14 +32,14 @@ export default function ProfilePage() {
 
   const fetchUserProfile = async () => {
     if (!user) return;
-
+  
     try {
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
-
+  
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setUsername(userData?.username || "User");
+        setUsername(userData?.username ?? (user.email ? user.email.split("@")[0] : "User"));
         setPoints(userData?.points || 0);
         setPointsUsed(userData?.pointsUsed || 0);
         setQuestionsAnswered(userData?.questionsAnswered || 0);
@@ -49,6 +49,8 @@ export default function ProfilePage() {
       console.error("Error fetching user profile:", error);
     }
   };
+  
+  
 
   const fetchGiftCardDetails = async (id: string) => {
     try {

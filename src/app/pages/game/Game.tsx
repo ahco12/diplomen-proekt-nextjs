@@ -64,28 +64,29 @@ export default function Quiz() {
       const fetchQuestions = async (difficulty: string, limit: number): Promise<Question[]> => {
         const q = query(
           collection(db, "questions"),
-          where("difficulty", "==", difficulty),
-          orderBy("randomField"), // Sort by precomputed random field
-          firestoreLimit(limit) // Fetch only required number
+          where("difficulty", "==", difficulty)
         );
-        
         const snapshot = await getDocs(q);
-        return snapshot.docs.map((doc) => ({
+  
+        const allQuestions = snapshot.docs.map((doc) => ({
           id: doc.id,
           question: doc.data().question,
           difficulty: doc.data().difficulty,
           answers: doc.data().answers,
         }));
+  
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+  
+        return shuffled.slice(0, limit);
       };
   
-      // Fetch different difficulty levels
       const easyQuestions = await fetchQuestions("easy", 5);
       const mediumQuestions = await fetchQuestions("medium", 5);
       const hardQuestions = await fetchQuestions("hard", 5);
   
-      // **Keep the correct order** (No shuffle after merging)
       setQuestions([...easyQuestions, ...mediumQuestions, ...hardQuestions]);
       setCurrentIndex(0);
+  
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
@@ -97,7 +98,7 @@ export default function Quiz() {
     if (isAnswered) return;
     setSelectedAnswerIndex(index);
     setIsAnswered(true);
-  
+    if(!questions[currentIndex]) return;
     const currentQuestion = questions[currentIndex];
     const isCorrect = currentQuestion.answers[index].isCorrect;
   

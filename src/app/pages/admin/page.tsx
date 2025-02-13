@@ -4,12 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { db } from '../../firebase/firebaseConfig';
 import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 
-
- interface Question {
+interface Question {
   id: string;
   question: string;
   difficulty: 'easy' | 'medium' | 'hard';
-  answers: { answer: string; correct: boolean }[];
+  answers: { answer: string; isCorrect: boolean }[];
+  randomField?: number; // New field added
 }
 
 const AdminPage: React.FC = () => {
@@ -20,7 +20,7 @@ const AdminPage: React.FC = () => {
   // State for new and editing question
   const [questionText, setQuestionText] = useState('');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
-  const [answers, setAnswers] = useState([{ answer: '', correct: false }]);
+  const [answers, setAnswers] = useState([{ answer: '', isCorrect: false }]);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
 
   // Fetch questions from Firestore
@@ -50,7 +50,7 @@ const AdminPage: React.FC = () => {
 
   // Add a new answer field
   const addAnswerField = () => {
-    setAnswers([...answers, { answer: '', correct: false }]);
+    setAnswers([...answers, { answer: '', isCorrect: false }]);
   };
 
   // Handle answer changes
@@ -64,7 +64,7 @@ const AdminPage: React.FC = () => {
   const handleCorrectAnswerChange = (index: number) => {
     const updatedAnswers = answers.map((ans, i) => ({
       ...ans,
-      correct: i === index,
+      isCorrect: i === index,
     }));
     setAnswers(updatedAnswers);
   };
@@ -79,31 +79,29 @@ const AdminPage: React.FC = () => {
         // Update existing question
         const questionRef = doc(db, 'questions', editingQuestionId);
         await updateDoc(questionRef, {
-          text: questionText,
+          question: questionText,
           difficulty,
           answers: answers.filter(ans => ans.answer.trim() !== ''),
         });
 
-        setQuestions(questions.map(q => q.id === editingQuestionId ? { ...q, text: questionText, difficulty, answers } : q));
+        setQuestions(questions.map(q => q.id === editingQuestionId ? { ...q, question: questionText, difficulty, answers } : q));
         setEditingQuestionId(null);
       } else {
-        // Add new question
+        // Add new question with `randomField`
         const newQuestionData = {
-          text: questionText,
+          question: questionText,
           difficulty,
           answers: answers.filter(ans => ans.answer.trim() !== ''),
+          randomField: Math.random(), // Generate a random float
         };
 
         const docRef = await addDoc(collection(db, 'questions'), newQuestionData);
-        setQuestions([...questions, {
-          id: docRef.id, ...newQuestionData,
-          question: ''
-        }]);
+        setQuestions([...questions, { id: docRef.id, ...newQuestionData }]);
       }
 
       alert('Question saved successfully!');
       setQuestionText('');
-      setAnswers([{ answer: '', correct: false }]);
+      setAnswers([{ answer: '', isCorrect: false }]);
     } catch (error) {
       console.error('Error saving question:', error);
     }
@@ -186,7 +184,7 @@ const AdminPage: React.FC = () => {
               <input
                 type="radio"
                 name="correctAnswer"
-                checked={ans.correct}
+                checked={ans.isCorrect}
                 onChange={() => handleCorrectAnswerChange(index)}
               />
               <span>Correct</span>
@@ -205,7 +203,6 @@ const AdminPage: React.FC = () => {
       {/* Loading State */}
       {loading ? <p>Loading questions...</p> : null}
 
-    {/* Only render the table if questions are loaded */}
       {!loading && questions.length > 0 ? (
         <table className="w-full border-collapse border border-gray-300 mt-6">
           <thead>
@@ -228,9 +225,7 @@ const AdminPage: React.FC = () => {
             ))}
           </tbody>
         </table>
-      ) : (
-        <p className="text-gray-500">No questions available.</p>
-      )}
+      ) : <p className="text-gray-500">No questions available.</p>}
     </div>
   );
 };
