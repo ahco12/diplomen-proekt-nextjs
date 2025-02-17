@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { collection, getDocs, orderBy, query, where, limit as firestoreLimit } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 import { useAuth } from "../../components/AuthProvider";
@@ -96,9 +96,11 @@ export default function Quiz() {
 
   const handleAnswerClick = async (index: number): Promise<void> => {
     if (isAnswered) return;
+  
     setSelectedAnswerIndex(index);
     setIsAnswered(true);
-    if(!questions[currentIndex]) return;
+    if (!questions[currentIndex]) return;
+  
     const currentQuestion = questions[currentIndex];
     const isCorrect = currentQuestion.answers[index].isCorrect;
   
@@ -108,8 +110,8 @@ export default function Quiz() {
       if (currentQuestion.difficulty === "medium") earnedPoints = 100;
       if (currentQuestion.difficulty === "hard") earnedPoints = 200;
   
-      setTempPoints(earnedPoints); // Display temporary points
-      setPoints((prev) => prev + earnedPoints); // Update points immediately
+      setTempPoints(earnedPoints);
+      setPoints((prev) => prev + earnedPoints);
     }
   
     if (user) {
@@ -124,15 +126,17 @@ export default function Quiz() {
     }
   
     if (isCorrect) {
-      setShowCorrect(true);
       setTimeout(() => {
-        if (currentIndex < questions.length - 1) {
-          setCurrentIndex((prev) => prev + 1);
-          resetState();
-        } else {
-          endGame();
-        }
-      }, 1500);
+        setShowCorrect(true); // Show green after 1.2s
+        setTimeout(() => {
+          if (currentIndex < questions.length - 1) {
+            setCurrentIndex((prev) => prev + 1);
+            resetState();
+          } else {
+            endGame();
+          }
+        }, 1500);
+      }, 1200); // 1.2s delay before changing to green
     } else {
       setTimeout(() => {
         setShowCorrect(true);
@@ -142,6 +146,8 @@ export default function Quiz() {
       }, 1400);
     }
   };
+  
+  
   
 
 
@@ -196,26 +202,41 @@ export default function Quiz() {
           <h2 className="text-2xl">{currentQuestion.question}</h2>
         </div>
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 w-full max-w-3xl">
-          {currentQuestion.answers.map((answer, index) => {
-            const isSelected = selectedAnswerIndex === index;
-            const isCorrect = answer.isCorrect;
-            const isWrongSelected = isSelected && !isCorrect;
+        {currentQuestion.answers.map((answer, index) => {
+          const isSelected = selectedAnswerIndex === index;
+          const isCorrect = answer.isCorrect;
+          const isWrongSelected = isSelected && !isCorrect;
 
-            let bgColor = "bg-gray-800";
-            if (isCorrect && showCorrect) bgColor = "bg-green-600";
-            if (isWrongSelected && isAnswered) bgColor = "bg-red-600";
+          // Default color
+          let bgColor = "bg-gray-800";
 
-            return (
-              <button
-                key={index}
-                onClick={() => handleAnswerClick(index)}
-                disabled={isAnswered}
-                className={`p-4 rounded-md border-2 border-gray-700 text-left hover:bg-blue-700 hover:border-blue-500 transition-all duration-300 ${bgColor}`}
-              >
-                {answer.answer}
-              </button>
-            );
-          })}
+          if (isSelected) {
+            bgColor = "bg-blue-600"; // Keep blue until color change
+          }
+
+          if (isAnswered) {
+            if (isCorrect && showCorrect) {
+              bgColor = "bg-green-600"; // Change to green after delay
+            } else if (isWrongSelected) {
+              bgColor = "bg-red-600"; // Change to red instantly
+            }
+          }
+
+          return (
+            <button
+              key={index}
+              onClick={() => handleAnswerClick(index)}
+              disabled={isAnswered}
+              className={`p-4 rounded-md border-2 border-gray-700 text-left transition-all duration-300 
+                ${isAnswered ? "pointer-events-none" : "hover:bg-blue-700 hover:border-blue-500"} 
+                ${bgColor}`}
+            >
+              {answer.answer}
+            </button>
+          );
+        })}
+
+
         </div>
       </div>
 
