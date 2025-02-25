@@ -9,12 +9,11 @@ import { FaUserCircle } from "react-icons/fa";
 
 const Navbar: React.FC = () => {
   const router = useRouter();
-  const { user, admin } = useAuth(); // Use global admin state from AuthProvider
+  const { user, admin } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -60,33 +59,34 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <div className="bg-orange-500 py-4 px-8 flex justify-between items-center">
+    <nav className="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-md p-4 flex justify-between items-center">
+      {/* Logo */}
       <button
         onClick={() => handleNavigation("Home")}
-        className="text-customGrey font-bold text-xl border-2 border-customGrey rounded-lg px-4 py-2 hover:text-black hover:border-black transition ease-in-out duration-300"
+        className="text-white font-bold text-2xl tracking-wide hover:opacity-80 transition"
       >
         Learn & Earn
       </button>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center text-customOrange rounded-full shadow-lg">
+      <div className="flex items-center gap-6">
         <button
           onClick={() => handleNavigation("Store")}
-          className="px-10 py-3 rounded-l-lg bg-customGrey hover:bg-black transition"
+          className="text-white font-semibold hover:underline transition"
         >
           Store
         </button>
 
         <button
           onClick={handleGameNavigation}
-          className="px-14 py-5 font-semibold text-xl bg-customGrey rounded-lg hover:bg-black transition border-gray-700"
+          className="px-5 py-2 bg-yellow-400 text-black font-semibold rounded-lg shadow-md hover:bg-yellow-300 transition"
         >
-          Play game
+          Play Game
         </button>
 
         <button
           onClick={() => handleNavigation("earn-more")}
-          className="px-10 py-3 rounded-r-lg bg-customGrey hover:bg-black transition-all ease-in-out"
+          className="text-white font-semibold hover:underline transition"
         >
           Earn More
         </button>
@@ -98,14 +98,14 @@ const Navbar: React.FC = () => {
           <div>
             <button
               onClick={() => setDropdownVisible((prev) => !prev)}
-              className="px-5 py-3 text-black border-2 border-black rounded-lg hover:bg-black hover:text-customOrange transition ease-in-out duration-300"
+              className="text-white text-2xl"
             >
-              <FaUserCircle className="text-2xl" />
+              <FaUserCircle />
             </button>
             {dropdownVisible && (
               <div
                 ref={dropdownRef}
-                className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border"
+                className="absolute right-0 mt-3 w-48 bg-white shadow-lg rounded-lg border transition-opacity"
               >
                 <button
                   onClick={() => router.push("/pages/profile")}
@@ -114,7 +114,6 @@ const Navbar: React.FC = () => {
                   Profile
                 </button>
 
-                {/* Admin Page Link (Only for Admins) */}
                 {admin && (
                   <button
                     onClick={() => router.push("/pages/admin")}
@@ -126,7 +125,7 @@ const Navbar: React.FC = () => {
 
                 <button
                   onClick={() => setShowLogoutModal(true)}
-                  className="block px-4 py-2 text-left text-gray-700 hover:bg-gray-100 w-full"
+                  className="block px-4 py-2 text-left text-red-600 hover:bg-gray-100 w-full"
                 >
                   Log Out
                 </button>
@@ -137,13 +136,13 @@ const Navbar: React.FC = () => {
           <div className="flex space-x-4">
             <button
               onClick={() => router.push("/pages/login")}
-              className="px-5 py-3 text-black border-2 border-black rounded-lg hover:bg-black hover:text-customOrange transition ease-in-out duration-300"
+              className="px-4 py-2 text-white border border-white rounded-lg hover:bg-white hover:text-blue-600 transition"
             >
               Login
             </button>
             <button
               onClick={() => router.push("/pages/register")}
-              className="px-9 py-3 bg-customGrey text-customOrange rounded-lg hover:bg-black transition ease-in-out duration-300"
+              className="px-5 py-2 bg-yellow-400 text-black font-semibold rounded-lg shadow-md hover:bg-yellow-300 transition"
             >
               Register
             </button>
@@ -175,7 +174,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </nav>
   );
 };
 

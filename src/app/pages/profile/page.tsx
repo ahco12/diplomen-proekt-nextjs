@@ -158,7 +158,7 @@ export default function ProfilePage() {
               Code: {selectedGiftCard.giftCardCode ?? "Not Available"}
             </p>
             <p className="text-lg mt-2">
-              Bought for: {selectedGiftCard.pointsRequired ?? "Unknown"}
+              Bought for: {selectedGiftCard.pointsRequired ?? "Unknown"} points
             </p>
             <p className="text-lg mt-2">
               Description: {selectedGiftCard.description ?? "No description available"}
