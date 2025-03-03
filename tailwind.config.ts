@@ -1,7 +1,5 @@
 import type { Config } from "tailwindcss";
 
-
-
 export default {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -13,14 +11,26 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'game-dark': '#1a1740',
+        'game-light': '#2a1f6f',
         customOrange: '#FFA500',
         customBlue: '#4169E1',
-        customGrey:'#2C2C2C',
+        customGrey: '#2C2C2C',
       },
       fontFamily: {
-        manrope: ['var(--font-manrope', 'sans-serif'],
+        manrope: ['var(--font-manrope)', 'sans-serif'], // ✅ FIXED: Closed `var(--font-manrope)`
       },
       keyframes: {
+        'gradient-x': {
+          '0%, 100%': {
+            backgroundSize: '200% 200%',
+            backgroundPosition: 'left center',
+          },
+          '50%': {
+            backgroundSize: '200% 200%',
+            backgroundPosition: 'right center',
+          },
+        },
         float: {
           '0%': { transform: 'translateY(0)', opacity: '1' },
           '100%': { transform: 'translateY(-50px)', opacity: '0' },
@@ -28,6 +38,8 @@ export default {
       },
       animation: {
         float: 'float 1s ease-in-out',
+        'gradient-x': 'gradient-x 3s ease infinite',
+        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

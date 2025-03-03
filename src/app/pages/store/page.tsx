@@ -2,16 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { collection, doc, getDoc, getDocs, updateDoc, arrayUnion, increment } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig"; 
-import { useAuth } from "../../components/AuthProvider"; 
+import { db } from "../../firebase/firebaseConfig";
+import { useAuth } from "../../components/AuthProvider";
 import Image from "next/image";
 
+// Add company type to StoreItem interface
 interface StoreItem {
   id: string;
   name: string;
   pointsRequired: number;
   image: string;
   description?: string;
+  company: string; // Add this line
 }
 
 function generateGiftCardCode(): string {
@@ -44,6 +46,9 @@ export default function StorePage() {
   const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [companies, setCompanies] = useState<string[]>([]);
+  const [selectedCompany, setSelectedCompany] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"pointsLow" | "pointsHigh">("pointsLow");
 
   useEffect(() => {
     fetchStoreItems();
@@ -51,36 +56,61 @@ export default function StorePage() {
   }, [user]);
 
   useEffect(() => {
-    setFilteredItems(
-      storeItems.filter((item) =>
+    let filtered = [...storeItems];
+
+    // Apply company filter
+    if (selectedCompany !== "all") {
+      filtered = filtered.filter(item => item.company === selectedCompany);
+    }
+
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    );
-  }, [searchQuery, storeItems]);
+      );
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      if (sortBy === "pointsLow") {
+        return a.pointsRequired - b.pointsRequired;
+      } else {
+        return b.pointsRequired - a.pointsRequired;
+      }
+    });
+
+    setFilteredItems(filtered);
+  }, [searchQuery, selectedCompany, sortBy, storeItems]);
 
   const fetchStoreItems = async () => {
     setLoading(true);
     const querySnapshot = await getDocs(collection(db, "storeItems"));
     const items: StoreItem[] = [];
+    const uniqueCompanies = new Set<string>();
 
     querySnapshot.forEach((doc) => {
       const documentData = doc.data();
       const image = documentData.image || "";
 
       Object.keys(documentData).forEach((key) => {
-        if (key !== "image") { 
+        if (key !== "image") {
           const nestedMap = documentData[key];
+          const company = nestedMap.company || "Other";
+          uniqueCompanies.add(company);
+          
           items.push({
             id: key,
             name: nestedMap.name || "Unnamed Item",
             pointsRequired: nestedMap.pointsRequired || 0,
             image,
             description: nestedMap.description || "",
+            company,
           });
         }
       });
     });
 
+    setCompanies(Array.from(uniqueCompanies));
     setStoreItems(items);
     setFilteredItems(items);
     setLoading(false);
@@ -146,50 +176,100 @@ export default function StorePage() {
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-gray-50 to-gray-200">
-      <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Store</h1>
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Store</h1>
 
-      {/* Points Display */}
-      <div className="text-center mb-6">
-        <p className="text-xl font-medium text-gray-700">
-          Your Points: <span className="text-blue-600 font-semibold">{userPoints}</span>
-        </p>
-      </div>
-
-      {/* Search Bar */}
-      <div className="max-w-md mx-auto mb-6">
-        <input
-          type="text"
-          placeholder="Search items..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-5 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-
-      {/* Store Items Grid */}
-      {loading ? (
-        <p className="text-center text-gray-600">Loading store items...</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map((item) => (
-            <div key={item.id} className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center">
-              <Image src={item.image} alt={item.name} width={150} height={100} className="rounded-md" />
-              <h2 className="text-xl font-semibold mt-3">{item.name}</h2>
-              <p className="text-gray-500 text-sm text-center mt-2">{item.description}</p>
-              <p className="text-lg font-bold text-blue-600 mt-3">Points Required: {item.pointsRequired}</p>
-              <button
-                onClick={() => confirmRedeem(item)}
-                className="mt-4 px-5 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition disabled:bg-gray-400"
-                disabled={userPoints < item.pointsRequired}
-              >
-                Redeem
-              </button>
-            </div>
-          ))}
+        {/* Points Display */}
+        <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+          <p className="text-xl font-medium text-center text-gray-700">
+            Available Points: <span className="text-blue-600 font-semibold">{userPoints}</span>
+          </p>
         </div>
-      )}
 
-      {/* Confirmation Modal */}
+        {/* Filters Section */}
+        <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search Bar */}
+            <input
+              type="text"
+              placeholder="Search items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            />
+
+            {/* Company Filter */}
+            <select
+              value={selectedCompany}
+              onChange={(e) => setSelectedCompany(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="all">All Companies</option>
+              {companies.map((company) => (
+                <option key={company} value={company}>{company}</option>
+              ))}
+            </select>
+
+            {/* Sort Filter */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as "pointsLow" | "pointsHigh")}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="pointsLow">Points: Low to High</option>
+              <option value="pointsHigh">Points: High to Low</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Store Items Grid */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredItems.map((item) => (
+              <div key={item.id} className="bg-white rounded-lg overflow-hidden shadow-lg transform transition-all duration-200 hover:scale-105">
+                <div className="relative h-48">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-t-lg"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <h2 className="text-xl font-semibold">{item.name}</h2>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      {item.company}
+                    </span>
+                  </div>
+                  <p className="text-gray-500 text-sm mb-4">{item.description}</p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-lg font-bold text-blue-600">{item.pointsRequired} points</p>
+                    <button
+                      onClick={() => confirmRedeem(item)}
+                      className={`px-4 py-2 rounded-md shadow-md transition ${
+                        userPoints >= item.pointsRequired
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                      disabled={userPoints < item.pointsRequired}
+                    >
+                      Redeem
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Keep existing modals ... */}
       {showConfirmation && selectedItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">

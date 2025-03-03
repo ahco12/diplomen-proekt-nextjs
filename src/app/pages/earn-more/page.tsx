@@ -6,23 +6,23 @@ import { db } from "../../firebase/firebaseConfig";
 import { useAuth } from "../../components/AuthProvider";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Define possible operators and their multipliers
+// Define possible operators and their points
 const operators = [
-  { symbol: "+", multiplier: 1.2 },
-  { symbol: "-", multiplier: 1.2 },
-  { symbol: "*", multiplier: 1.2 },
-  { symbol: "/", multiplier: 1.2 },
-  { symbol: "^", multiplier: 1.8 },
-  { symbol: "√", multiplier: 1.4 },
-  { symbol: "sin", multiplier: 2 },
-  { symbol: "cos", multiplier: 2 },
-  { symbol: "tan", multiplier: 2 },
+  { symbol: "+", points: 200 },
+  { symbol: "-", points: 200 },
+  { symbol: "*", points: 200 },
+  { symbol: "/", points: 200 },
+  { symbol: "^", points: 300 },
+  { symbol: "√", points: 300 },
+  { symbol: "sin", points: 400 },
+  { symbol: "cos", points: 400 },
+  { symbol: "tan", points: 400 },
 ];
 
 interface Question {
   equation: string;
   answer: number;
-  multiplier: number;
+  points: number;
 }
 
 export default function EarnMorePage() {
@@ -34,8 +34,6 @@ export default function EarnMorePage() {
   const [correctAnswers, setCorrectAnswers] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [userPoints, setUserPoints] = useState<number>(0); // User's total points
-  const [betAmount, setBetAmount] = useState<number>(0); // Points the user bets
-  const [isBetPlaced, setIsBetPlaced] = useState<boolean>(false); // Whether a bet is placed
 
   useEffect(() => {
     if (user) {
@@ -81,7 +79,7 @@ export default function EarnMorePage() {
   const generateQuestion = (): Question => {
     const randomOp = operators[Math.floor(Math.random() * operators.length)];
     const op = randomOp.symbol;
-    const multiplier = randomOp.multiplier;
+    const points = randomOp.points;
 
     let equation = "";
     let answer = 0;
@@ -121,12 +119,12 @@ export default function EarnMorePage() {
             : op === "cos"
             ? Math.cos((angle * Math.PI) / 180)
             : Math.tan((angle * Math.PI) / 180);
-        answer = parseFloat(answer.toFixed(4)); // Round to 4 decimals
+        answer = parseFloat(answer.toFixed(2)); // Round to 2 decimals
         break;
       }
     }
 
-    return { equation, answer, multiplier };
+    return { equation, answer, points };
   };
 
   // Handle user answer submission
@@ -143,17 +141,17 @@ export default function EarnMorePage() {
     // Calculate points gained or lost
     let pointsChange = 0;
     if (isCorrect) {
-      pointsChange = betAmount * question.multiplier;
+      pointsChange = question.points; // Points for correct answer
       setUserPoints((prev) => prev + pointsChange);
     } else {
-      pointsChange = -betAmount;
+      pointsChange = -50; // Fixed points for incorrect answer
       setUserPoints((prev) => prev + pointsChange);
     }
 
     setMessage(
       isCorrect
-        ? `✅ Correct! You earned ${pointsChange.toFixed(2)} points!`
-        : `❌ Incorrect! You lost ${Math.abs(pointsChange).toFixed(2)} points. The correct answer was ${question.answer}`
+        ? `✅ Correct! You earned ${pointsChange} points!`
+        : `❌ Incorrect! You lost ${Math.abs(pointsChange)} points. The correct answer was ${question.answer}`
     );
 
     // Update Firestore with attempt and points
@@ -180,113 +178,128 @@ export default function EarnMorePage() {
     setAttempts(attempts + 1);
     if (isCorrect) setCorrectAnswers(correctAnswers + 1);
 
-    // Reset bet and generate new question after delay
+    // Reset and generate new question after delay
     setTimeout(() => {
       if (attempts + 1 < 5) {
         setQuestion(null);
         setUserAnswer("");
         setMessage("");
-        setIsBetPlaced(false);
-        setBetAmount(0);
       }
     }, 2000);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4">
-      {/* Betting Section */}
-      <div className="bg-white p-6 rounded-2xl shadow-2xl mr-6 w-96">
-        <h2 className="text-2xl font-bold mb-4 text-purple-700">Place Your Bet</h2>
-        <p className="text-gray-600 mb-4">Your Points: {userPoints.toFixed(2)}</p>
-        <input
-          type="number"
-          className="border border-gray-300 rounded-lg px-4 py-3 mb-4 w-full text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
-          placeholder="Enter bet amount"
-          value={betAmount}
-          onChange={(e) => setBetAmount(parseFloat(e.target.value))}
-          min="0"
-          max={userPoints}
-        />
-        <button
-          className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full hover:bg-purple-700 transition-all"
-          onClick={() => {
-            if (betAmount > 0 && betAmount <= userPoints) {
-              setIsBetPlaced(true);
-              setQuestion(generateQuestion());
-            } else {
-              setMessage("Invalid bet amount!");
-            }
-          }}
-          disabled={isBetPlaced}
-        >
-          Place Bet
-        </button>
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1740] to-[#2a1f6f] p-8">
+      {/* Header with Points Display */}
+      <div className="max-w-4xl mx-auto mb-8">
+        <div className="flex justify-between items-center bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200">
+            Math Challenge
+          </h1>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-blue-300 text-sm">Your Points</p>
+              <p className="text-2xl font-bold text-yellow-400">{userPoints}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-blue-300 text-sm">Daily Progress</p>
+              <p className="text-xl font-semibold text-white">{attempts}/5</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Question Section */}
-      <div className="bg-white p-8 rounded-2xl shadow-2xl text-center w-96">
-        <h1 className="text-3xl font-bold mb-6 text-purple-700">Earn More Points</h1>
-
-        {loading ? (
-          <p className="text-gray-600">Loading...</p>
-        ) : attempts >= 5 ? (
-          <p className="text-red-500 font-semibold">You have reached your limit for today. Come back tomorrow!</p>
-        ) : (
-          <>
-            <AnimatePresence>
-              {isBetPlaced && question ? (
+      {/* Game Section */}
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20">
+          {loading ? (
+            <div className="flex justify-center">
+              <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : attempts >= 5 ? (
+            <div className="text-center space-y-4">
+              <h2 className="text-2xl font-bold text-yellow-400">Daily Limit Reached!</h2>
+              <p className="text-blue-200">You&apos;ve completed today&apos;s challenges. Come back tomorrow!</p>
+              <div className="p-4 bg-white/5 rounded-xl">
+                <p className="text-green-400 font-semibold">Total Correct: {correctAnswers}/5</p>
+                <p className="text-blue-300">Points Earned Today: {correctAnswers * 200}+</p>
+              </div>
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              {question ? (
                 <motion.div
                   key="question"
-                  initial={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-6"
                 >
-                  <p className="text-2xl font-semibold mb-6 text-gray-800">Solve: {question.equation}</p>
-                  <input
-                    type="text"
-                    className="border border-gray-300 rounded-lg px-4 py-3 mb-4 w-full text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Your answer"
-                    value={userAnswer}
-                    onChange={(e) => setUserAnswer(e.target.value)}
-                  />
-                  <button
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full hover:bg-purple-700 transition-all"
-                    onClick={handleSubmit}
-                  >
-                    Submit
-                  </button>
+                  <div className="text-center space-y-2">
+                    <p className="text-blue-200 text-sm">Question {attempts + 1} of 5</p>
+                    <p className="text-3xl font-bold text-white">{question.equation}</p>
+                    <p className="text-yellow-400 text-sm">Worth {question.points} points</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <input
+                      type="text"
+                      className="w-full bg-white/5 border border-white/20 rounded-xl px-6 py-4 text-center text-xl text-white placeholder-blue-300/50 focus:outline-none focus:border-yellow-400/50"
+                      placeholder="Enter your answer..."
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                    />
+                    <button
+                      onClick={handleSubmit}
+                      className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-4 rounded-xl hover:from-yellow-500 hover:to-yellow-600 transform hover:scale-105 transition-all duration-200"
+                    >
+                      Submit Answer
+                    </button>
+                  </div>
+
                   {message && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className={`mt-4 text-lg font-semibold ${
-                        message.includes("✅") ? "text-green-600" : "text-red-600"
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className={`p-4 rounded-xl ${
+                        message.includes("✅")
+                          ? "bg-green-500/20 text-green-400"
+                          : "bg-red-500/20 text-red-400"
                       }`}
                     >
                       {message}
-                    </motion.p>
+                    </motion.div>
                   )}
                 </motion.div>
               ) : (
-                <motion.p
-                  key="no-bet"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  className="text-gray-600"
+                <motion.div
+                  key="start"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center space-y-6"
                 >
-                  Place a bet to see the equation.
-                </motion.p>
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-bold text-white">Ready for the next challenge?</h2>
+                    <p className="text-blue-300">Test your math skills and earn points!</p>
+                  </div>
+                  <button
+                    onClick={() => setQuestion(generateQuestion())}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200"
+                  >
+                    Start New Question
+                  </button>
+                </motion.div>
               )}
             </AnimatePresence>
-          </>
-        )}
+          )}
 
-        <div className="mt-6">
-          <p className="text-gray-600">Attempts: {attempts}/5</p>
-          <p className="text-green-600 font-semibold">Correct Answers: {correctAnswers}</p>
+          {/* Progress Display */}
+          <div className="mt-8 pt-6 border-t border-white/10">
+            <div className="flex justify-between items-center text-sm">
+              <p className="text-blue-300">Questions Completed: {attempts}/5</p>
+              <p className="text-green-400">Correct Answers: {correctAnswers}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

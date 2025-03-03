@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from './components/AuthProvider';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './firebase/firebaseConfig';
-import Image from 'next/image';
+import { FaTrophy, FaCoins, FaStore, FaGamepad } from 'react-icons/fa';
 
 export default function HomePage() {
   const router = useRouter();
@@ -29,87 +29,112 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white flex flex-col items-center p-6">
-      {/* Hero Section */}
-      <div className="text-center mt-10">
-        <h1 className="text-5xl font-extrabold text-blue-400 drop-shadow-md">
-          Welcome to the Ultimate Quiz Challenge! 🎮
-        </h1>
-        <p className="mt-4 text-lg text-gray-300">
-          Test your knowledge, earn points, and redeem real rewards!
-        </p>
-      </div>
-
-      {/* User Stats */}
-      {user && (
-        <div className="mt-6 p-4 bg-gray-800 rounded-lg shadow-lg flex items-center space-x-4">
-          <p className="text-lg">Your Points:</p>
-          <span className="text-3xl font-bold text-yellow-400">{userPoints}</span>
+    <div className="min-h-screen bg-[#1a1740] bg-gradient-to-b from-[#1a1740] to-[#0d0b24] text-white">
+      {/* Hero Section with Millionaire-style design */}
+      <div className="relative h-[50vh] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-blue-600/20 z-0">
+          <div className="absolute inset-0 bg-[url('/millionaire-bg.png')] bg-cover bg-[position:0px_600px] opacity-30 mix-blend-overlay"></div>
         </div>
-      )}
-
-      {/* Call to Actions */}
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <button
-          onClick={() => router.push('/quiz')}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-xl font-bold shadow-md transition-all"
-        >
-          🎯 Play Quiz
-        </button>
-        <button
-          onClick={() => router.push('/earn-more')}
-          className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-xl font-bold shadow-md transition-all"
-        >
-          🔢 Earn More (Math Mode)
-        </button>
-      </div>
-
-      {/* How It Works Section */}
-      <div className="mt-14 w-full max-w-4xl text-center">
-        <h2 className="text-3xl font-bold text-white mb-6">How It Works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-semibold text-blue-400">🎮 Play & Answer</h3>
-            <p className="text-gray-300 mt-2">
-              Answer trivia questions and solve math problems to earn points.
-            </p>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-semibold text-yellow-400">💰 Earn Points</h3>
-            <p className="text-gray-300 mt-2">
-              The harder the question, the more points you win!
-            </p>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-semibold text-green-400">🎁 Redeem Rewards</h3>
-            <p className="text-gray-300 mt-2">
-              Use your points to claim gift cards and prizes in the store.
-            </p>
-          </div>
+        <div className="relative z-10 text-center px-4">
+          <h1 className="text-6xl font-extrabold mb-6">
+            <span className="bg-gradient-to-r from-blue-400 to-purple-600 text-transparent bg-clip-text">
+              Learn & Earn
+            </span>
+          </h1>
+          <p className="text-2xl text-blue-300 mb-8">Your Journey to Knowledge and Rewards</p>
+          {user && (
+            <div className="inline-block bg-gradient-to-r from-blue-500/20 to-purple-500/20 p-6 rounded-2xl backdrop-blur-sm">
+              <div className="flex items-center gap-4">
+                <FaCoins className="text-yellow-400 text-3xl animate-pulse" />
+                <div>
+                  <p className="text-sm text-blue-300">Your Points Balance</p>
+                  <p className="text-4xl font-bold text-yellow-400">{userPoints.toLocaleString()}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Leaderboard & Rewards */}
-      <div className="mt-16 w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Leaderboard Preview */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h3 className="text-2xl font-bold text-yellow-400">🏆 Leaderboard</h3>
-          <p className="text-gray-300 mt-2">Top players of the week</p>
-          {/* Placeholder for dynamic leaderboard */}
-          <div className="mt-4 space-y-2">
-            <p className="text-white">🥇 Player1 - 5000 points</p>
-            <p className="text-white">🥈 Player2 - 4000 points</p>
-            <p className="text-white">🥉 Player3 - 3500 points</p>
+      {/* Game Modes Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <button
+            onClick={() => router.push('./pages/game')}
+            className="group relative overflow-hidden rounded-2xl p-[2px] transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 rounded-2xl animate-gradient-x"></div>
+            <div className="relative bg-[#1a1740] p-8 rounded-2xl h-full transition-transform duration-300 group-hover:scale-[0.99]">
+              <FaGamepad className="text-5xl mb-4 text-blue-400" />
+              <h3 className="text-2xl font-bold mb-2">Classic Quiz Mode</h3>
+              <p className="text-blue-300">Test your knowledge with our millionaire-style quiz!</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => router.push('/earn-more')}
+            className="group relative overflow-hidden rounded-2xl p-[2px] transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-blue-600 to-green-600 rounded-2xl animate-gradient-x"></div>
+            <div className="relative bg-[#1a1740] p-8 rounded-2xl h-full transition-transform duration-300 group-hover:scale-[0.99]">
+              <FaCoins className="text-5xl mb-4 text-yellow-400" />
+              <h3 className="text-2xl font-bold mb-2">Speed Math Challenge</h3>
+              <p className="text-blue-300">Quick math problems for quick rewards!</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 p-6 rounded-2xl backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <FaTrophy className="text-3xl text-yellow-400" />
+              <h3 className="text-xl font-bold">Compete</h3>
+            </div>
+            <p className="text-blue-300">Challenge yourself and climb the leaderboard!</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 p-6 rounded-2xl backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <FaCoins className="text-3xl text-yellow-400" />
+              <h3 className="text-xl font-bold">Earn</h3>
+            </div>
+            <p className="text-blue-300">Accumulate points with each correct answer!</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 p-6 rounded-2xl backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <FaStore className="text-3xl text-yellow-400" />
+              <h3 className="text-xl font-bold">Redeem</h3>
+            </div>
+            <p className="text-blue-300">Exchange points for amazing rewards!</p>
           </div>
         </div>
+      </div>
 
-        {/* Rewards Preview */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h3 className="text-2xl font-bold text-green-400">🎁 Top Rewards</h3>
-          <p className="text-gray-300 mt-2">Check out some of the prizes you can win!</p>
-          <div className="mt-4 flex items-center space-x-4">
-            <Image src="/gift-card.png" alt="Gift Card" width={50} height={50} />
-            <p className="text-white">Amazon Gift Card - 1000 points</p>
+      {/* Leaderboard Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-2xl p-8">
+          <h2 className="text-3xl font-bold mb-6 text-center">🏆 Top Champions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Top 3 Players */}
+            <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-700/20 p-6 rounded-xl text-center">
+              <div className="text-4xl mb-2">🥇</div>
+              <p className="font-bold">Player1</p>
+              <p className="text-yellow-400">5,000 points</p>
+            </div>
+            <div className="bg-gradient-to-br from-gray-400/20 to-gray-600/20 p-6 rounded-xl text-center">
+              <div className="text-4xl mb-2">🥈</div>
+              <p className="font-bold">Player2</p>
+              <p className="text-gray-400">4,000 points</p>
+            </div>
+            <div className="bg-gradient-to-br from-orange-500/20 to-orange-700/20 p-6 rounded-xl text-center">
+              <div className="text-4xl mb-2">🥉</div>
+              <p className="font-bold">Player3</p>
+              <p className="text-orange-400">3,500 points</p>
+            </div>
           </div>
         </div>
       </div>
