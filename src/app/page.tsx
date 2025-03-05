@@ -33,7 +33,7 @@ export default function HomePage() {
       {/* Hero Section with Millionaire-style design */}
       <div className="relative h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-blue-600/20 z-0">
-          <div className="absolute inset-0 bg-[url('/millionaire-bg.png')] bg-cover bg-[position:0px_600px] opacity-30 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-[url('/millionaire-bg.webp')] bg-cover bg-[position:0px_600px] opacity-30 mix-blend-overlay"></div>
         </div>
         <div className="relative z-10 text-center px-4">
           <h1 className="text-6xl font-extrabold mb-6">
@@ -72,7 +72,7 @@ export default function HomePage() {
           </button>
 
           <button
-            onClick={() => router.push('/earn-more')}
+            onClick={() => router.push('./pages/earn-more')}
             className="group relative overflow-hidden rounded-2xl p-[2px] transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-blue-600 to-green-600 rounded-2xl animate-gradient-x"></div>

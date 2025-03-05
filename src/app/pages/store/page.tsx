@@ -90,23 +90,30 @@ export default function StorePage() {
 
     querySnapshot.forEach((doc) => {
       const documentData = doc.data();
-      const image = documentData.image || "";
+      let image = "";
+
+      // Set image based on document ID
+      if (doc.id === "amazon") {
+        image = "/amazon.webp";
+      } else if (doc.id === "billa") {
+        image = "/billa.webp";
+      } else {
+        image = "/default.webp"; // Default image for other documents
+      }
 
       Object.keys(documentData).forEach((key) => {
-        if (key !== "image") {
-          const nestedMap = documentData[key];
-          const company = nestedMap.company || "Other";
-          uniqueCompanies.add(company);
-          
-          items.push({
-            id: key,
-            name: nestedMap.name || "Unnamed Item",
-            pointsRequired: nestedMap.pointsRequired || 0,
-            image,
-            description: nestedMap.description || "",
-            company,
-          });
-        }
+        const nestedMap = documentData[key];
+        const company = nestedMap.company || "Other";
+        uniqueCompanies.add(company);
+        
+        items.push({
+          id: key,
+          name: nestedMap.name || "Unnamed Item",
+          pointsRequired: nestedMap.pointsRequired || 0,
+          image,
+          description: nestedMap.description || "",
+          company,
+        });
       });
     });
 

@@ -97,80 +97,138 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Welcome, {username}!
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Profile Header */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+          <div className="flex items-center gap-6 mb-6">
+            <div className="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center">
+              <span className="text-3xl text-white font-bold">
+                {username?.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">
+                Welcome back, {username}!
+              </h1>
+              <p className="text-gray-500 mt-1">Your Learning Dashboard</p>
+            </div>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <div className="bg-blue-100 p-4 rounded-md shadow-md">
-            <h2 className="text-lg font-medium">Points</h2>
-            <p className="text-2xl font-bold text-blue-600">{points}</p>
-          </div>
-          <div className="bg-green-100 p-4 rounded-md shadow-md">
-            <h2 className="text-lg font-medium">Points Used</h2>
-            <p className="text-2xl font-bold text-green-600">{pointsUsed}</p>
-          </div>
-          <div className="bg-yellow-100 p-4 rounded-md shadow-md">
-            <h2 className="text-lg font-medium">Questions Answered</h2>
-            <p className="text-2xl font-bold text-yellow-600">
-              {questionsAnswered}
-            </p>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100">Available Points</p>
+                  <h3 className="text-3xl font-bold mt-1">{points}</h3>
+                </div>
+                <div className="text-3xl">🏆</div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-100">Points Used</p>
+                  <h3 className="text-3xl font-bold mt-1">{pointsUsed}</h3>
+                </div>
+                <div className="text-3xl">💎</div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-100">Questions Answered</p>
+                  <h3 className="text-3xl font-bold mt-1">{questionsAnswered}</h3>
+                </div>
+                <div className="text-3xl">✨</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="mt-6">
-          <h2 className="text-2xl font-bold mb-4">Redeemed Gift Cards</h2>
+        {/* Gift Cards Section */}
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Your Gift Cards
+          </h2>
+          
           {redeemedItems.length === 0 ? (
-            <p className="text-gray-600">No gift cards redeemed yet.</p>
+            <div className="text-center py-12">
+              <div className="text-5xl mb-4">🎁</div>
+              <p className="text-gray-500">No gift cards redeemed yet.</p>
+              <p className="text-sm text-gray-400 mt-2">Start earning points to get your first gift card!</p>
+            </div>
           ) : (
-            <ul className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {redeemedItems.map((item) => (
-                <li
+                <div
                   key={item.uniqueId}
-                  className="p-4 bg-gray-100 rounded-lg shadow-md flex justify-between items-center cursor-pointer hover:bg-gray-200"
                   onClick={() => handleGiftCardClick(item)}
+                  className="bg-gray-50 hover:bg-gray-100 rounded-xl p-6 cursor-pointer transition-all duration-200 border border-gray-200 hover:border-indigo-300"
                 >
-                  <div>
-                    <h3 className="font-medium">{item.name}</h3>
-                    <p className="text-sm text-gray-600">
-                      Redeemed on: {new Date(item.date).toLocaleDateString()}
-                    </p>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-gray-800">{item.name}</h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {new Date(item.date).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <span className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
+                      View Details →
+                    </span>
                   </div>
-                  <span className="text-sm text-blue-600 underline">
-                    View Code
-                  </span>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Gift Card Modal */}
+      {/* Modal - Updated Design */}
       {selectedGiftCard && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
-            <h3 className="text-xl font-bold mb-4">Gift Card Details</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                Gift Card Details
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-sm text-gray-500 mb-1">Gift Card Code</p>
+                  <p className="font-mono text-lg font-medium">
+                    {selectedGiftCard.giftCardCode ?? "Not Available"}
+                  </p>
+                </div>
 
-            <p className="text-lg font-mono bg-gray-100 p-2 rounded-lg">
-              Code: {selectedGiftCard.giftCardCode ?? "Not Available"}
-            </p>
-            <p className="text-lg mt-2">
-              Bought for: {selectedGiftCard.pointsRequired ?? "Unknown"} points
-            </p>
-            <p className="text-lg mt-2">
-              Description: {selectedGiftCard.description ?? "No description available"}
-            </p>
+                <div className="flex gap-4">
+                  <div className="flex-1 bg-gray-50 rounded-xl p-4">
+                    <p className="text-sm text-gray-500 mb-1">Points Cost</p>
+                    <p className="font-medium">
+                      {selectedGiftCard.pointsRequired ?? "Unknown"} points
+                    </p>
+                  </div>
+                </div>
 
-            <div className="mt-6 flex justify-end space-x-2">
-              <button
-                onClick={() => setSelectedGiftCard(null)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"
-              >
-                Close
-              </button>
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-sm text-gray-500 mb-1">Description</p>
+                  <p className="text-gray-700">
+                    {selectedGiftCard.description ?? "No description available"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setSelectedGiftCard(null)}
+                  className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
