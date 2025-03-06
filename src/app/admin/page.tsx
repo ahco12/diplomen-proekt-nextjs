@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { db } from '../../firebase/firebaseConfig';
+import { db } from '../firebase/firebaseConfig';
 import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 
 interface Question {
@@ -86,39 +86,51 @@ const AdminPage: React.FC = () => {
   
   // Handle new question submission
   const handleAddOrUpdateQuestion = async () => {
-    if (!questionText.trim()) return alert('Question cannot be empty!');
-    if (answers.length < 2) return alert('Add at least two answers.');
-    if (!hasCorrectAnswer()) return alert('You must select at least one correct answer.');
+    if (!questionText.trim()) return alert("Question cannot be empty!");
+    if (answers.length < 2) return alert("Add at least two answers.");
+    if (!hasCorrectAnswer()) return alert("You must select at least one correct answer.");
+  
     try {
       if (editingQuestionId) {
-        // Update existing question
-        const questionRef = doc(db, 'questions', editingQuestionId);
+        // Update existing question (keep randomField unchanged)
+        const questionRef = doc(db, "questions", editingQuestionId);
         await updateDoc(questionRef, {
           question: questionText,
           difficulty,
-          answers: answers.filter(ans => ans.answer.trim() !== ''),
+          answers: answers.filter((ans) => ans.answer.trim() !== ""),
         });
-
-        setQuestions(questions.map(q => q.id === editingQuestionId ? { ...q, question: questionText, difficulty, answers } : q));
-        resetForm(); // Reset after editing
+  
+        setQuestions(
+          questions.map((q) =>
+            q.id === editingQuestionId
+              ? { ...q, question: questionText, difficulty, answers }
+              : q
+          )
+        );
+        resetForm();
       } else {
-        // Add new question
+        // Generate a random float for randomField
+        const randomFloat = Math.random(); // ✅ This generates a random float between 0 and 1
+  
+        // Add new question with randomField
         const newQuestionData = {
           question: questionText,
           difficulty,
-          answers: answers.filter(ans => ans.answer.trim() !== ''),
+          answers: answers.filter((ans) => ans.answer.trim() !== ""),
+          randomField: randomFloat, // ✅ Add this field
         };
-
-        const docRef = await addDoc(collection(db, 'questions'), newQuestionData);
+  
+        const docRef = await addDoc(collection(db, "questions"), newQuestionData);
         setQuestions([...questions, { id: docRef.id, ...newQuestionData }]);
         resetForm();
       }
-
-      alert('Question saved successfully!');
+  
+      alert("Question saved successfully!");
     } catch (error) {
-      console.error('Error saving question:', error);
+      console.error("Error saving question:", error);
     }
   };
+  
 
   const handleAddStoreItem = async () => {
     if (!selectedCompany || !itemName.trim() || !itemDescription.trim() || itemPointsRequired <= 0) {

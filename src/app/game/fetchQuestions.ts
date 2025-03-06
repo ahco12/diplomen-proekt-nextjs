@@ -1,6 +1,6 @@
 // game/fetchQuestions.ts
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig";
+import { db } from "../firebase/firebaseConfig";
 
 interface Answer {
   answer: string;

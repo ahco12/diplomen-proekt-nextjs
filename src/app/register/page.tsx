@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../../firebase/firebaseConfig';
+import { auth, db } from '../firebase/firebaseConfig';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaHome } from 'react-icons/fa';

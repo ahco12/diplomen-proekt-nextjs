@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig";
-import { useAuth } from "../../components/AuthProvider";
+import { db } from "../firebase/firebaseConfig";
+import { useAuth } from "../components/AuthProvider";
 
 interface Answer {
   answer: string;

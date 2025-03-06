@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig"; // Adjust path if needed
-import { useAuth } from "../../components/AuthProvider"; // Adjust path if needed
+import { db } from "../firebase/firebaseConfig"; // Adjust path if needed
+import { useAuth } from "../components/AuthProvider"; // Adjust path if needed
 
 interface RedeemedItem {
   id: string; // Nested map key (e.g., "amazon_card_10")

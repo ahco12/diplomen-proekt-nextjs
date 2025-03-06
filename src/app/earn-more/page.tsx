@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig";
-import { useAuth } from "../../components/AuthProvider";
+import { db } from "../firebase/firebaseConfig";
+import { useAuth } from "../components/AuthProvider";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Define possible operators and their points

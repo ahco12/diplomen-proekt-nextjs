@@ -36,13 +36,13 @@ const Navbar: React.FC = () => {
     if (link === "Home") {
       router.push("/");
     } else {
-      router.push(`/pages/${link.toLowerCase().replace(" ", "-")}`);
+      router.push(`/${link.toLowerCase().replace(" ", "-")}`);
     }
   };
 
   const handleGameNavigation = () => {
     if (user) {
-      router.push("/pages/game");
+      router.push("/game");
     } else {
       alert("You must be logged in to play the game.");
     }
@@ -118,7 +118,7 @@ const Navbar: React.FC = () => {
                   className="absolute right-0 mt-3 w-48 bg-[#1a1740] border border-blue-500 shadow-lg rounded-lg overflow-hidden"
                 >
                   <button
-                    onClick={() => router.push("/pages/profile")}
+                    onClick={() => router.push("/profile")}
                     className="block px-4 py-2 text-left text-blue-200 hover:bg-blue-900 w-full transition-colors duration-300"
                   >
                     Profile
@@ -126,7 +126,7 @@ const Navbar: React.FC = () => {
 
                   {admin && (
                     <button
-                      onClick={() => router.push("/pages/admin")}
+                      onClick={() => router.push("/admin")}
                       className="block px-4 py-2 text-left text-blue-200 hover:bg-blue-900 w-full transition-colors duration-300"
                     >
                       Admin Page
@@ -145,13 +145,13 @@ const Navbar: React.FC = () => {
           ) : (
             <div className="flex space-x-4">
               <button
-                onClick={() => router.push("/pages/login")}
+                onClick={() => router.push("/login")}
                 className="px-4 py-2 text-blue-200 border border-blue-400 rounded-lg hover:bg-blue-900/50 transition-colors duration-300"
               >
                 Login
               </button>
               <button
-                onClick={() => router.push("/pages/register")}
+                onClick={() => router.push("/register")}
                 className="px-5 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold rounded-lg shadow-md 
                           hover:from-yellow-500 hover:to-yellow-600 transition-all duration-300"
               >

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { collection, doc, getDoc, getDocs, updateDoc, arrayUnion, increment } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig";
-import { useAuth } from "../../components/AuthProvider";
+import { db } from "../firebase/firebaseConfig";
+import { useAuth } from "../components/AuthProvider";
 import Image from "next/image";
 
 // Add company type to StoreItem interface

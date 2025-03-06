@@ -8,7 +8,7 @@ export default function NavbarWrapper() {
   const pathname = usePathname();
 
   // Define the routes that SHOULD NOT display the navbar
-  const hiddenRoutes = ['/pages/login', '/pages/register', '/pages/game'];
+  const hiddenRoutes = ['/login', '/register', '/game'];
 
   // If current path is in hiddenRoutes, return nothing
   if (hiddenRoutes.includes(pathname)) {

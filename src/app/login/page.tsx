@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../firebase/firebaseConfig';
+import { auth } from '../firebase/firebaseConfig';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link'; // Import Link for client-side navigation
 import { FaHome } from 'react-icons/fa'; // Import the house icon

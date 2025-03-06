@@ -60,7 +60,7 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <button
-            onClick={() => router.push('./pages/game')}
+            onClick={() => router.push('./game')}
             className="group relative overflow-hidden rounded-2xl p-[2px] transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 rounded-2xl animate-gradient-x"></div>
@@ -72,7 +72,7 @@ export default function HomePage() {
           </button>
 
           <button
-            onClick={() => router.push('./pages/earn-more')}
+            onClick={() => router.push('./earn-more')}
             className="group relative overflow-hidden rounded-2xl p-[2px] transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-blue-600 to-green-600 rounded-2xl animate-gradient-x"></div>
