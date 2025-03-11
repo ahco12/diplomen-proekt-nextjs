@@ -142,11 +142,10 @@ export default function Quiz() {
         setShowCorrect(true);
         setTimeout(() => {
           endGame();
-        }, 1000);
+        }, 1800);
       }, 1400);
     }
   };
-  
   
   
 
@@ -193,104 +192,106 @@ export default function Quiz() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="min-h-screen flex">
-      {/* Main Game Section */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-b from-black to-gray-900 text-white p-4">
-        <h1 className="text-4xl font-bold mb-8 text-center">Who Wants to Be a Millionaire?</h1>
-        <div className="bg-blue-800 text-center text-lg font-semibold p-6 rounded-md shadow-lg border-4 border-blue-400 w-full max-w-3xl">
-          <p className="mb-4">Question {currentIndex + 1}</p>
-          <h2 className="text-2xl">{currentQuestion.question}</h2>
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-black">
+      <div className="flex gap-6 p-6">
+        {/* Main Game Section */}
+        <div className="flex-1">
+          {/* Question Card */}
+          <div className="mb-8 p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <span className="text-white/80 text-lg">Question {currentIndex + 1}/{questions.length}</span>
+            </div>
+            <h2 className="text-2xl text-white font-medium mb-8">{currentQuestion.question}</h2>
+            
+            {/* Answers Grid */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {currentQuestion.answers.map((answer, index) => {
+                const isSelected = selectedAnswerIndex === index;
+                const isCorrect = answer.isCorrect;
+                const isWrongSelected = isSelected && !isCorrect;
+
+                const styles = `
+                  relative p-6 rounded-xl border-2 text-white transition-all duration-300
+                  ${isAnswered ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-102 hover:border-blue-400'}
+                  ${!isAnswered ? 'bg-white/5 border-white/10' : ''}
+                  ${isSelected && !showCorrect ? 'bg-blue-600 border-blue-400' : ''}
+                  ${showCorrect && isCorrect ? 'bg-green-600 border-green-400' : ''}
+                  ${isWrongSelected && showCorrect ? 'bg-red-600 border-red-400' : ''}
+                `;
+
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswerClick(index)}
+                    disabled={isAnswered}
+                    className={styles}
+                  >
+                    <span className="text-lg">{answer.answer}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 w-full max-w-3xl">
-        {currentQuestion.answers.map((answer, index) => {
-          const isSelected = selectedAnswerIndex === index;
-          const isCorrect = answer.isCorrect;
-          const isWrongSelected = isSelected && !isCorrect;
 
-          // Default color
-          let bgColor = "bg-gray-800";
+        {/* Progress & Points Column */}
+        <div className="w-80 space-y-6">
+          {/* Points Card */}
+          <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
+            <h3 className="text-xl text-white font-semibold mb-4">Score</h3>
+            <div className="text-4xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">
+              {points}
+            </div>
+            {tempPoints > 0 && (
+              <div className="absolute top-2 right-2 text-green-400 font-bold animate-bounce">
+                +{tempPoints}
+              </div>
+            )}
+          </div>
 
-          if (isSelected) {
-            bgColor = "bg-blue-600"; // Keep blue until color change
-          }
+          {/* Progress Card */}
+          <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
+            <h3 className="text-xl text-white font-semibold mb-4">Progress</h3>
+            <div className="grid grid-cols-5 gap-2">
+              {questions.map((_, index) => {
+                const isActive = index === currentIndex;
+                const isCompleted = index < currentIndex;
 
-          if (isAnswered) {
-            if (isCorrect && showCorrect) {
-              bgColor = "bg-green-600"; // Change to green after delay
-            } else if (isWrongSelected) {
-              bgColor = "bg-red-600"; // Change to red instantly
-            }
-          }
-
-          return (
-            <button
-              key={index}
-              onClick={() => handleAnswerClick(index)}
-              disabled={isAnswered}
-              className={`p-4 rounded-md border-2 border-gray-700 text-left transition-all duration-300 
-                ${isAnswered ? "pointer-events-none" : "hover:bg-blue-700 hover:border-blue-500"} 
-                ${bgColor}`}
-            >
-              {answer.answer}
-            </button>
-          );
-        })}
-
-
+                return (
+                  <div
+                    key={index}
+                    className={`
+                      flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium
+                      ${isActive ? 'bg-blue-500 text-white' : ''}
+                      ${isCompleted ? 'bg-green-500 text-white' : ''}
+                      ${!isActive && !isCompleted ? 'bg-white/20 text-white/60' : ''}
+                    `}
+                  >
+                    {index + 1}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Progress Column */}
-      <div className="w-1/5 bg-gray-800 text-white p-4">
-        <h2 className="text-lg font-semibold mb-4 text-center">Progress</h2>
-        <ul className="flex flex-col-reverse space-y-2 space-y-reverse">
-          {questions.map((_, index) => {
-            const isActive = index === currentIndex;
-            const isCompleted = index < currentIndex;
-
-            return (
-              <li
-                key={index}
-                className={`p-2 rounded-md text-center text-sm ${
-                  isActive
-                    ? "bg-blue-600"
-                    : isCompleted
-                    ? "bg-green-600"
-                    : "bg-gray-600"
-                }`}
-              >
-                Question {index + 1}
-              </li>
-            );
-          })}
-        </ul>
-
-        {/* Points Tracker */}
-        <div className="mt-4 p-4 bg-gray-700 rounded-md text-center relative">
-          <h3 className="text-md font-semibold">Points</h3>
-          <p className="text-lg font-bold">{points}</p>
-          {tempPoints > 0 && (
-            <div className="temp-points">+{tempPoints}</div>
-          )}
-        </div>
-      </div>
-
-      {/* Modal */}
+      {/* Game Over Modal */}
       {isGameOver && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 shadow-lg text-center">
-            <h2 className="text-2xl font-bold mb-4">Game Over</h2>
-            <p className="text-lg mb-4">You earned {points} points!</p>
-            <div className="flex space-x-4 justify-center">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 max-w-md w-full mx-4">
+            <h2 className="text-3xl font-bold text-white mb-4">Game Over!</h2>
+            <p className="text-xl text-white/90 mb-8">Final Score: {points} points</p>
+            <div className="flex gap-4">
               <button
                 onClick={handleRestart}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition"
               >
                 Play Again
               </button>
               <button
                 onClick={handleMainMenu}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                className="flex-1 py-3 px-6 bg-white/10 hover:bg-white/20 text-white rounded-xl transition"
               >
                 Main Menu
               </button>

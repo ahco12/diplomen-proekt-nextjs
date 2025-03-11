@@ -8,6 +8,9 @@ export default {
   ],
   theme: {
     extend: {
+      scale: {
+        '102': '1.02',
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
@@ -40,8 +43,12 @@ export default {
         float: 'float 1s ease-in-out',
         'gradient-x': 'gradient-x 3s ease infinite',
         pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce': 'bounce 1s infinite'
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('@tailwindcss/forms'),
+  ]
 } satisfies Config;

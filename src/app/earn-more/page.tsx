@@ -31,7 +31,7 @@ export default function EarnMorePage() {
   const [userAnswer, setUserAnswer] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [userPoints, setUserPoints] = useState<number>(0); // User's total points
-  const [pointsEarned, setPointsEarned] = useState<number>(0); // Points earned in the current session
+  const [sessionPointsChange, setSessionPointsChange] = useState<number>(0); // Points change in the current session
   const [correctStreak, setCorrectStreak] = useState<number>(0); // Current streak of correct answers
   const [maxStreak, setMaxStreak] = useState<number>(0); // Max streak of correct answers
   const [multiplier, setMultiplier] = useState<number>(1); // Current points multiplier
@@ -119,12 +119,12 @@ export default function EarnMorePage() {
   // Handle user answer submission
   const handleSubmit = async () => {
     if (!user || !question) return;
-
+  
     const userNum = parseFloat(userAnswer);
     const isCorrect = Math.abs(userNum - question.answer) < 0.01;
-
-    // Calculate points gained or lost
+  
     let pointsChange = 0;
+  
     if (isCorrect) {
       let newMultiplier = 1;
       if (correctStreak >= 5) {
@@ -132,32 +132,37 @@ export default function EarnMorePage() {
       } else if (correctStreak >= 2) {
         newMultiplier = 1.2;
       }
+  
       setMultiplier(newMultiplier);
-      pointsChange = Math.round(question.points * newMultiplier); // Points for correct answer with multiplier
-      setUserPoints((prev) => prev + pointsChange);
-      setPointsEarned((prev) => prev + pointsChange);
+      pointsChange = Math.round(question.points * newMultiplier);
+  
+      setUserPoints((prevPoints) => prevPoints + pointsChange);
+      setSessionPointsChange((prev) => prev + pointsChange); // Track total session change!
       setCorrectStreak((prev) => prev + 1);
       setMaxStreak((prev) => Math.max(prev, correctStreak + 1));
     } else {
-      pointsChange = -50; // Fixed points for incorrect answer
-      setUserPoints((prev) => prev + pointsChange);
-      setCorrectStreak(0); // Reset streak on incorrect answer
-      setMultiplier(1); // Reset multiplier on incorrect answer
+      pointsChange = -Math.round(question.points * 1.3);
+  
+      setUserPoints((prevPoints) => {
+        const updatedPoints = prevPoints + pointsChange;
+        return updatedPoints < 0 ? 0 : updatedPoints;
+      });
+      setSessionPointsChange((prev) => prev + pointsChange); // Track total session change!
+      setCorrectStreak(0);
+      setMultiplier(1);
     }
-
+  
     setMessage(
       isCorrect
         ? `✅ Correct! You earned ${pointsChange} points!`
         : `❌ Incorrect! You lost ${Math.abs(pointsChange)} points. The correct answer was ${question.answer}`
     );
-
-    // Update user's points in Firestore
+  
     const userDocRef = doc(db, "users", user.uid);
     await updateDoc(userDocRef, {
-      points: userPoints + pointsChange,
+      points: userPoints + pointsChange < 0 ? 0 : userPoints + pointsChange,
     });
-
-    // Reset and generate new question after delay
+  
     setTimeout(() => {
       if (isCorrect) {
         setQuestion(generateQuestion());
@@ -168,6 +173,8 @@ export default function EarnMorePage() {
       setMessage("");
     }, 2000);
   };
+  
+  
 
   // Handle Enter key press for answer submission
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -281,13 +288,27 @@ export default function EarnMorePage() {
       {!question && gameStarted && (
         <div className="max-w-2xl mx-auto mt-8">
           <div className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 text-center">
-            <h2 className="text-2xl font-bold text-white">Game Over</h2>
-            <p className="text-blue-300 mt-4">You earned a total of {pointsEarned} points!</p>
-            <p className="text-blue-300">Max streak of correct answers: {maxStreak}</p>
+            <h2 className="text-2xl font-bold text-white mb-4">Game Over</h2>
+
+            <p className="text-lg mb-2 text-white">
+              You {sessionPointsChange >= 0 ? 'earned' : 'lost'}{" "}
+              <span className={sessionPointsChange >= 0 ? "text-green-400" : "text-red-400"}>
+                {Math.abs(sessionPointsChange)} points
+              </span>{" "}
+              this session.
+            </p>
+
+            <p className="text-blue-300 mb-4">
+              Your total points are now:{" "}
+              <span className="text-yellow-400 font-bold">{userPoints}</span>
+            </p>
+
+            <p className="text-blue-300 mb-4">Max streak of correct answers: {maxStreak}</p>
+
             <button
               onClick={() => {
-                setPointsEarned(0);
                 setMaxStreak(0);
+                setSessionPointsChange(0); // Reset session points
                 setQuestion(generateQuestion());
               }}
               className="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200"
