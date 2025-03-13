@@ -3,19 +3,29 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './components/AuthProvider';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, query, orderBy, limit } from 'firebase/firestore';
 import { db } from './firebase/firebaseConfig';
-import { FaTrophy, FaCoins, FaStore, FaGamepad } from 'react-icons/fa';
+import { FaTrophy, FaCoins, FaStore, FaGamepad, FaCrown } from 'react-icons/fa';
+import toast, { Toaster } from 'react-hot-toast';
+
+interface LeaderboardEntry {
+  id: string;
+  username: string;
+  points: number;
+}
 
 export default function HomePage() {
   const router = useRouter();
   const { user } = useAuth();
   const [userPoints, setUserPoints] = useState<number>(0);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
 
   useEffect(() => {
     if (user) {
       fetchUserPoints();
     }
+    fetchLeaderboard();
   }, [user]);
 
   const fetchUserPoints = async () => {
@@ -28,8 +38,46 @@ export default function HomePage() {
     }
   };
 
+  const fetchLeaderboard = async () => {
+    try {
+      const leaderboardQuery = query(
+        collection(db, 'users'),
+        orderBy('points', 'desc'),
+        limit(10)
+      );
+      const querySnapshot = await getDocs(leaderboardQuery);
+
+      const leaderboardData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        username: doc.data().username || 'Anonymous',
+        points: doc.data().points || 0,
+      }));
+
+      setLeaderboard(leaderboardData);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    } finally {
+      setLoadingLeaderboard(false);
+    }
+  };
+
+  const handleGameModeClick = (path: string) => {
+    if (!user) {
+      toast.error('Please log in to access this game mode!', {
+        style: {
+          background: '#EF4444',
+          color: 'white',
+        },
+      });
+      return;
+    }
+    router.push(path);
+  };
+
   return (
     <div className="min-h-screen bg-[#1a1740] bg-gradient-to-b from-[#1a1740] to-[#0d0b24] text-white">
+      <Toaster position="top-center" />
+      
       {/* Hero Section with Millionaire-style design */}
       <div className="relative h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-blue-600/20 z-0">
@@ -60,7 +108,7 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <button
-            onClick={() => router.push('./game')}
+            onClick={() => handleGameModeClick('./game')}
             className="group relative overflow-hidden rounded-2xl p-[2px] transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 rounded-2xl animate-gradient-x"></div>
@@ -72,7 +120,7 @@ export default function HomePage() {
           </button>
 
           <button
-            onClick={() => router.push('./earn-more')}
+            onClick={() => handleGameModeClick('./earn-more')}
             className="group relative overflow-hidden rounded-2xl p-[2px] transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-blue-600 to-green-600 rounded-2xl animate-gradient-x"></div>
@@ -118,24 +166,33 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-2xl p-8">
           <h2 className="text-3xl font-bold mb-6 text-center">🏆 Top Champions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Top 3 Players */}
-            <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-700/20 p-6 rounded-xl text-center">
-              <div className="text-4xl mb-2">🥇</div>
-              <p className="font-bold">Player1</p>
-              <p className="text-yellow-400">5,000 points</p>
+
+          {loadingLeaderboard ? (
+            <p className="text-center text-blue-300">Loading leaderboard...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {leaderboard.map((player, index) => (
+                <div
+                  key={player.id}
+                  className={`p-6 rounded-xl text-center ${
+                    index === 0
+                      ? 'bg-gradient-to-br from-yellow-500/20 to-yellow-700/20'
+                      : index === 1
+                      ? 'bg-gradient-to-br from-gray-400/20 to-gray-600/20'
+                      : index === 2
+                      ? 'bg-gradient-to-br from-orange-500/20 to-orange-700/20'
+                      : 'bg-white/10'
+                  }`}
+                >
+                  <div className="text-4xl mb-2">
+                    {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : <FaCrown className="text-yellow-400" />}
+                  </div>
+                  <p className="font-bold">{player.username}</p>
+                  <p className="text-yellow-400">{player.points.toLocaleString()} points</p>
+                </div>
+              ))}
             </div>
-            <div className="bg-gradient-to-br from-gray-400/20 to-gray-600/20 p-6 rounded-xl text-center">
-              <div className="text-4xl mb-2">🥈</div>
-              <p className="font-bold">Player2</p>
-              <p className="text-gray-400">4,000 points</p>
-            </div>
-            <div className="bg-gradient-to-br from-orange-500/20 to-orange-700/20 p-6 rounded-xl text-center">
-              <div className="text-4xl mb-2">🥉</div>
-              <p className="font-bold">Player3</p>
-              <p className="text-orange-400">3,500 points</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

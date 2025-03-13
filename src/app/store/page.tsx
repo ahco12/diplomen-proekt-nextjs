@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, doc, getDoc, getDocs, updateDoc, arrayUnion, increment } from "firebase/firestore";
+import toast, { Toaster } from 'react-hot-toast';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  arrayUnion,
+  increment,
+} from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useAuth } from "../components/AuthProvider";
 import Image from "next/image";
@@ -13,7 +22,7 @@ interface StoreItem {
   pointsRequired: number;
   image: string;
   description?: string;
-  company: string; // Add this line
+  company: string; // ✅ Company type exists now
 }
 
 function generateGiftCardCode(): string {
@@ -25,7 +34,9 @@ function generateGiftCardCode(): string {
   for (let i = 0; i < segments; i++) {
     let segment = "";
     for (let j = 0; j < segmentLength; j++) {
-      segment += characters.charAt(Math.floor(Math.random() * characters.length));
+      segment += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
     }
     code += segment + (i < segments - 1 ? "-" : "");
   }
@@ -39,7 +50,7 @@ export default function StorePage() {
   const [userPoints, setUserPoints] = useState(0);
   const [pointsUsed, setPointsUsed] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const { user } = useAuth(); 
+  const { user } = useAuth();
 
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -58,14 +69,16 @@ export default function StorePage() {
   useEffect(() => {
     let filtered = [...storeItems];
 
-    // Apply company filter
+    // ✅ Company filter working now
     if (selectedCompany !== "all") {
-      filtered = filtered.filter(item => item.company === selectedCompany);
+      filtered = filtered.filter(
+        (item) => item.company === selectedCompany
+      );
     }
 
     // Apply search filter
     if (searchQuery) {
-      filtered = filtered.filter(item =>
+      filtered = filtered.filter((item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -88,14 +101,17 @@ export default function StorePage() {
     const items: StoreItem[] = [];
     const uniqueCompanies = new Set<string>();
 
-    querySnapshot.forEach((doc) => {
-      const documentData = doc.data();
+    querySnapshot.forEach((docSnap) => {
+      const documentData = docSnap.data();
+      const company = docSnap.id; // ✅ Use document ID as company
+      uniqueCompanies.add(company); // ✅ Collect company name for filter
+
       let image = "";
 
       // Set image based on document ID
-      if (doc.id === "amazon") {
+      if (company === "amazon") {
         image = "/amazon.webp";
-      } else if (doc.id === "billa") {
+      } else if (company === "billa") {
         image = "/billa.webp";
       } else {
         image = "/default.webp"; // Default image for other documents
@@ -103,16 +119,14 @@ export default function StorePage() {
 
       Object.keys(documentData).forEach((key) => {
         const nestedMap = documentData[key];
-        const company = nestedMap.company || "Other";
-        uniqueCompanies.add(company);
-        
+
         items.push({
           id: key,
           name: nestedMap.name || "Unnamed Item",
           pointsRequired: nestedMap.pointsRequired || 0,
           image,
           description: nestedMap.description || "",
-          company,
+          company, // ✅ Correctly assign company from document ID
         });
       });
     });
@@ -146,7 +160,7 @@ export default function StorePage() {
     if (!selectedItem || !user) return;
 
     if (userPoints < selectedItem.pointsRequired) {
-      alert("Not enough points to redeem this item.");
+      toast.error("Not enough points to redeem this item.");
       setShowConfirmation(false);
       return;
     }
@@ -173,9 +187,11 @@ export default function StorePage() {
       setPointsUsed(pointsUsed + selectedItem.pointsRequired);
       setSelectedItem(null);
       setShowConfirmation(false);
-      setShowSuccess(true); // Show success modal after redemption
+      setShowSuccess(true);
+      toast.success('Item redeemed successfully!');
     } catch (error) {
       console.error("Error redeeming item:", error);
+      toast.error('Failed to redeem item. Please try again.');
     } finally {
       setIsRedeeming(false);
     }
@@ -183,6 +199,23 @@ export default function StorePage() {
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-gray-50 to-gray-200">
+      <Toaster 
+        position="top-center"
+        toastOptions={{
+          success: {
+            style: {
+              background: '#10B981',
+              color: 'white',
+            },
+          },
+          error: {
+            style: {
+              background: '#EF4444',
+              color: 'white',
+            },
+          },
+        }}
+      />
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Store</h1>
 
@@ -213,14 +246,18 @@ export default function StorePage() {
             >
               <option value="all">All Companies</option>
               {companies.map((company) => (
-                <option key={company} value={company}>{company}</option>
+                <option key={company} value={company}>
+                  {company}
+                </option>
               ))}
             </select>
 
             {/* Sort Filter */}
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "pointsLow" | "pointsHigh")}
+              onChange={(e) =>
+                setSortBy(e.target.value as "pointsLow" | "pointsHigh")
+              }
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
             >
               <option value="pointsLow">Points: Low to High</option>
@@ -237,13 +274,16 @@ export default function StorePage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredItems.map((item) => (
-              <div key={item.id} className="bg-white rounded-lg overflow-hidden shadow-lg transform transition-all duration-200 hover:scale-105">
+              <div
+                key={item.id}
+                className="bg-white rounded-lg overflow-hidden shadow-lg transform transition-all duration-200 hover:scale-105"
+              >
                 <div className="relative h-48">
                   <Image
                     src={item.image}
                     alt={item.name}
                     fill
-                    style={{ objectFit: 'cover' }}
+                    style={{ objectFit: "cover" }}
                     className="rounded-t-lg"
                   />
                 </div>
@@ -256,13 +296,15 @@ export default function StorePage() {
                   </div>
                   <p className="text-gray-500 text-sm mb-4">{item.description}</p>
                   <div className="flex justify-between items-center">
-                    <p className="text-lg font-bold text-blue-600">{item.pointsRequired} points</p>
+                    <p className="text-lg font-bold text-blue-600">
+                      {item.pointsRequired} points
+                    </p>
                     <button
                       onClick={() => confirmRedeem(item)}
                       className={`px-4 py-2 rounded-md shadow-md transition ${
                         userPoints >= item.pointsRequired
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       }`}
                       disabled={userPoints < item.pointsRequired}
                     >
@@ -276,15 +318,28 @@ export default function StorePage() {
         )}
       </div>
 
-      {/* Keep existing modals ... */}
+      {/* Confirmation Modal */}
       {showConfirmation && selectedItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <h2 className="text-xl font-bold mb-4">Confirm Redemption</h2>
-            <p>Redeem <span className="font-semibold">{selectedItem.name}</span> for {selectedItem.pointsRequired} points?</p>
+            <p>
+              Redeem{" "}
+              <span className="font-semibold">{selectedItem.name}</span> for{" "}
+              {selectedItem.pointsRequired} points?
+            </p>
             <div className="mt-4 flex justify-center space-x-3">
-              <button className="px-4 py-2 bg-gray-300 rounded-md" onClick={() => setShowConfirmation(false)}>Cancel</button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md" onClick={redeemItem} disabled={isRedeeming}>
+              <button
+                className="px-4 py-2 bg-gray-300 rounded-md"
+                onClick={() => setShowConfirmation(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded-md"
+                onClick={redeemItem}
+                disabled={isRedeeming}
+              >
                 {isRedeeming ? "Processing..." : "Confirm"}
               </button>
             </div>
@@ -296,9 +351,17 @@ export default function StorePage() {
       {showSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-xl font-bold text-green-600 mb-4">Redemption Successful!</h2>
-            <p className="text-gray-700">Your item has been redeemed successfully. Check your profile for the gift card code.</p>
-            <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md" onClick={() => setShowSuccess(false)}>
+            <h2 className="text-xl font-bold text-green-600 mb-4">
+              Redemption Successful!
+            </h2>
+            <p className="text-gray-700">
+              Your item has been redeemed successfully. Check your profile for
+              the gift card code.
+            </p>
+            <button
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+              onClick={() => setShowSuccess(false)}
+            >
               Close
             </button>
           </div>

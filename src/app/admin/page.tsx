@@ -44,6 +44,7 @@ const AdminPage: React.FC = () => {
   const [storeItems, setStoreItems] = useState<StoreItem[]>([]);
   const [loadingStoreItems, setLoadingStoreItems] = useState(true);
   const [selectedCompany, setSelectedCompany] = useState('');
+  const [companies, setCompanies] = useState<string[]>([]);
   const [itemName, setItemName] = useState('');
   const [itemDescription, setItemDescription] = useState('');
   const [itemPointsRequired, setItemPointsRequired] = useState<number>(0);
@@ -107,6 +108,21 @@ const AdminPage: React.FC = () => {
     };
 
     fetchStoreItems();
+  }, []);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'storeItems'));
+        const companyList = querySnapshot.docs.map(doc => doc.id);
+        setCompanies(companyList);
+      } catch (error) {
+        console.error('Error fetching companies:', error);
+        toast.error('Failed to load companies');
+      }
+    };
+
+    fetchCompanies();
   }, []);
 
   const filteredQuestions = questions.filter(q => q.difficulty === activeCategory);
@@ -530,13 +546,21 @@ const AdminPage: React.FC = () => {
                 </h2>
               </div>
               <div className="p-8 space-y-4">
-                <input
-                  type="text"
-                  placeholder="Enter company"
-                  value={selectedCompany}
-                  onChange={e => setSelectedCompany(e.target.value)}
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                  <select
+                    value={selectedCompany}
+                    onChange={e => setSelectedCompany(e.target.value)}
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  >
+                    <option value="">Select a company</option>
+                    {companies.map(company => (
+                      <option key={company} value={company}>
+                        {company}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <input
                   type="text"
                   placeholder="Enter item name"
