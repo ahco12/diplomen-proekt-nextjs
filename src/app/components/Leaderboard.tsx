@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
-import { db } from './firebase/firebaseConfig';
+import { db } from '../firebase/firebaseConfig';
 import { FaCrown } from 'react-icons/fa';
 
 interface User {
