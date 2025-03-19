@@ -109,13 +109,39 @@ export default function StorePage() {
       let image = "";
 
       // Set image based on document ID
-      if (company === "amazon") {
-        image = "/amazon.webp";
-      } else if (company === "billa") {
-        image = "/billa.webp";
-      } else {
-        image = "/default.webp"; // Default image for other documents
+      switch (company) {
+        case "amazon":
+          image = "/amazon.webp";
+          break;
+        case "billa":
+          image = "/billa.webp";
+          break;
+        case "kaufland":
+          image = "/kaufland.webp";
+          break;
+        case "lidl":
+          image = "/lidl.webp";
+          break;
+        case "H&M":
+          image = "/hm.webp";
+          break;
+        case "Nike":
+          image = "/nike.webp";
+          break;
+        case "Adidas":
+          image = "/adidas.webp";
+          break;
+        case "Starbucks":
+          image = "/starbucks.webp";
+          break;
+        case "Dominos":
+          image = "/dominos.webp";
+          break;
+        default:
+          image = "/default.webp";
+          break;
       }
+      
 
       Object.keys(documentData).forEach((key) => {
         const nestedMap = documentData[key];

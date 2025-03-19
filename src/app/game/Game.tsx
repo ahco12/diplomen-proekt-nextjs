@@ -30,6 +30,7 @@ export default function Quiz() {
   const [tempPoints, setTempPoints] = useState<number>(0);
   const [pointsInterval] = useState<NodeJS.Timeout | null>(null);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
+  const [animatingPoints, setAnimatingPoints] = useState<number>(0);
   const router = useRouter();
   const { user } = useAuth();
 
@@ -84,7 +85,9 @@ export default function Quiz() {
       const mediumQuestions = await fetchQuestions("medium", 5);
       const hardQuestions = await fetchQuestions("hard", 5);
   
-      setQuestions([...easyQuestions, ...mediumQuestions, ...hardQuestions]);
+      const allQuestions = [...easyQuestions, ...mediumQuestions, ...hardQuestions];
+        
+      setQuestions(allQuestions);
       setCurrentIndex(0);
   
     } catch (error) {
@@ -92,8 +95,7 @@ export default function Quiz() {
     }
   };
   
-  
-
+  // Update the handleAnswerClick function
   const handleAnswerClick = async (index: number): Promise<void> => {
     if (isAnswered) return;
   
@@ -109,9 +111,6 @@ export default function Quiz() {
       if (currentQuestion.difficulty === "easy") earnedPoints = 50;
       if (currentQuestion.difficulty === "medium") earnedPoints = 100;
       if (currentQuestion.difficulty === "hard") earnedPoints = 200;
-  
-      setTempPoints(earnedPoints);
-      setPoints((prev) => prev + earnedPoints);
     }
   
     if (user) {
@@ -127,16 +126,35 @@ export default function Quiz() {
   
     if (isCorrect) {
       setTimeout(() => {
-        setShowCorrect(true); // Show green after 1.2s
+        setShowCorrect(true);
+        // Start points animation when answer is revealed
+        const startPoints = points;
+        const endPoints = points + earnedPoints;
+        const duration = 1000; // 1 second animation
+        const increment = Math.ceil((endPoints - startPoints) / (duration / 16));
+  
+        let currentPoints = startPoints;
+        const animation = setInterval(() => {
+          currentPoints = Math.min(currentPoints + increment, endPoints);
+          setAnimatingPoints(currentPoints);
+          
+          if (currentPoints >= endPoints) {
+            clearInterval(animation);
+            setPoints(endPoints);
+            setTempPoints(earnedPoints);
+          }
+        }, 16);
+  
         setTimeout(() => {
           if (currentIndex < questions.length - 1) {
             setCurrentIndex((prev) => prev + 1);
             resetState();
+            setTempPoints(0); // Reset temp points when moving to next question
           } else {
             endGame();
           }
         }, 1500);
-      }, 1200); // 1.2s delay before changing to green
+      }, 1200);
     } else {
       setTimeout(() => {
         setShowCorrect(true);
@@ -147,9 +165,6 @@ export default function Quiz() {
     }
   };
   
-  
-
-
   const resetState = (): void => {
     setSelectedAnswerIndex(null);
     setIsAnswered(false);
@@ -174,6 +189,8 @@ export default function Quiz() {
       clearInterval(pointsInterval);
     }
     setPoints(0);
+    setAnimatingPoints(0); // Add this line to reset the animated points
+    setTempPoints(0); // Also reset temp points
     setSelectedAnswerIndex(null);
     setIsAnswered(false);
     setShowCorrect(false);
@@ -192,19 +209,19 @@ export default function Quiz() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-black">
-      <div className="flex gap-6 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-black p-4">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* Main Game Section */}
         <div className="flex-1">
           {/* Question Card */}
-          <div className="mb-8 p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl">
-            <div className="flex justify-between items-center mb-6">
-              <span className="text-white/80 text-lg">Question {currentIndex + 1}/{questions.length}</span>
+          <div className="mb-4 md:mb-8 p-4 md:p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl">
+            <div className="flex justify-between items-center mb-4 md:mb-6">
+              <span className="text-white/80 text-base md:text-lg">Question {currentIndex + 1}/{questions.length}</span>
             </div>
-            <h2 className="text-2xl text-white font-medium mb-8">{currentQuestion.question}</h2>
+            <h2 className="text-xl md:text-2xl text-white font-medium mb-6 md:mb-8">{currentQuestion.question}</h2>
             
             {/* Answers Grid */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 md:gap-4">
               {currentQuestion.answers.map((answer, index) => {
                 const isSelected = selectedAnswerIndex === index;
                 const isCorrect = answer.isCorrect;
@@ -235,24 +252,24 @@ export default function Quiz() {
         </div>
 
         {/* Progress & Points Column */}
-        <div className="w-80 space-y-6">
+        <div className="w-full md:w-80 space-y-3 md:space-y-6">
           {/* Points Card */}
-          <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-            <h3 className="text-xl text-white font-semibold mb-4">Score</h3>
-            <div className="text-4xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">
-              {points}
+          <div className="p-4 md:p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
+            <h3 className="text-lg md:text-xl text-white font-semibold mb-2 md:mb-4">Score</h3>
+            <div className="text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">
+              {animatingPoints || points}
             </div>
             {tempPoints > 0 && (
-              <div className="absolute top-2 right-2 text-green-400 font-bold animate-bounce">
+              <div className="absolute top-2 right-2 text-sm md:text-base text-green-400 font-bold animate-bounce">
                 +{tempPoints}
               </div>
             )}
           </div>
 
           {/* Progress Card */}
-          <div className="p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-            <h3 className="text-xl text-white font-semibold mb-4">Progress</h3>
-            <div className="grid grid-cols-5 gap-2">
+          <div className="p-4 md:p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
+            <h3 className="text-lg md:text-xl text-white font-semibold mb-2 md:mb-4">Progress</h3>
+            <div className="grid grid-cols-5 gap-1 md:gap-2">
               {questions.map((_, index) => {
                 const isActive = index === currentIndex;
                 const isCompleted = index < currentIndex;
@@ -261,7 +278,7 @@ export default function Quiz() {
                   <div
                     key={index}
                     className={`
-                      flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium
+                      flex items-center justify-center w-6 h-6 md:w-8 md:h-8 rounded-full text-xs md:text-sm font-medium
                       ${isActive ? 'bg-blue-500 text-white' : ''}
                       ${isCompleted ? 'bg-green-500 text-white' : ''}
                       ${!isActive && !isCompleted ? 'bg-white/20 text-white/60' : ''}
@@ -278,20 +295,20 @@ export default function Quiz() {
 
       {/* Game Over Modal */}
       {isGameOver && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 max-w-md w-full mx-4">
-            <h2 className="text-3xl font-bold text-white mb-4">Game Over!</h2>
-            <p className="text-xl text-white/90 mb-8">Final Score: {points} points</p>
-            <div className="flex gap-4">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 md:p-8 w-full max-w-md">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Game Over!</h2>
+            <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8">Final Score: {points} points</p>
+            <div className="flex flex-col md:flex-row gap-3 md:gap-4">
               <button
                 onClick={handleRestart}
-                className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition"
+                className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition"
               >
                 Play Again
               </button>
               <button
                 onClick={handleMainMenu}
-                className="flex-1 py-3 px-6 bg-white/10 hover:bg-white/20 text-white rounded-xl transition"
+                className="w-full py-3 px-6 bg-white/10 hover:bg-white/20 text-white rounded-xl transition"
               >
                 Main Menu
               </button>

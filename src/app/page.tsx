@@ -78,25 +78,25 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#1a1740] bg-gradient-to-b from-[#1a1740] to-[#0d0b24] text-white">
       <Toaster position="top-center" />
       
-      {/* Hero Section with Millionaire-style design */}
-      <div className="relative h-[50vh] flex items-center justify-center overflow-hidden">
+      {/* Hero Section */}
+      <div className="relative h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-blue-600/20 z-0">
-          <div className="absolute inset-0 bg-[url('/millionaire-bg.webp')] bg-cover bg-[position:0px_600px] opacity-30 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-[url('/millionaire-bg.webp')] bg-cover bg-center md:bg-[position:0px_600px] opacity-30 mix-blend-overlay"></div>
         </div>
         <div className="relative z-10 text-center px-4">
-          <h1 className="text-6xl font-extrabold mb-6">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 md:mb-6">
             <span className="bg-gradient-to-r from-blue-400 to-purple-600 text-transparent bg-clip-text">
               Learn & Earn
             </span>
           </h1>
-          <p className="text-2xl text-blue-300 mb-8">Your Journey to Knowledge and Rewards</p>
+          <p className="text-xl md:text-2xl text-blue-300 mb-6 md:mb-8">Your Journey to Knowledge and Rewards</p>
           {user && (
-            <div className="inline-block bg-gradient-to-r from-blue-500/20 to-purple-500/20 p-6 rounded-2xl backdrop-blur-sm">
-              <div className="flex items-center gap-4">
-                <FaCoins className="text-yellow-400 text-3xl animate-pulse" />
+            <div className="inline-block bg-gradient-to-r from-blue-500/20 to-purple-500/20 p-4 md:p-6 rounded-2xl backdrop-blur-sm">
+              <div className="flex items-center gap-3 md:gap-4">
+                <FaCoins className="text-yellow-400 text-2xl md:text-3xl animate-pulse" />
                 <div>
-                  <p className="text-sm text-blue-300">Your Points Balance</p>
-                  <p className="text-4xl font-bold text-yellow-400">{userPoints.toLocaleString()}</p>
+                  <p className="text-xs md:text-sm text-blue-300">Your Points Balance</p>
+                  <p className="text-2xl md:text-4xl font-bold text-yellow-400">{userPoints.toLocaleString()}</p>
                 </div>
               </div>
             </div>
@@ -105,8 +105,8 @@ export default function HomePage() {
       </div>
 
       {/* Game Modes Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           <button
             onClick={() => handleGameModeClick('./game')}
             className="group relative overflow-hidden rounded-2xl p-[2px] transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
@@ -134,8 +134,8 @@ export default function HomePage() {
       </div>
 
       {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
           <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 p-6 rounded-2xl backdrop-blur-sm">
             <div className="flex items-center gap-4 mb-4">
               <FaTrophy className="text-3xl text-yellow-400" />
@@ -163,14 +163,14 @@ export default function HomePage() {
       </div>
 
       {/* Leaderboard Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-2xl p-8">
-          <h2 className="text-3xl font-bold mb-6 text-center">🏆 Top Champions</h2>
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-16">
+        <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-2xl p-4 md:p-8">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center">🏆 Top Champions</h2>
 
           {loadingLeaderboard ? (
             <p className="text-center text-blue-300">Loading leaderboard...</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
               {leaderboard.map((player, index) => (
                 <div
                   key={player.id}
