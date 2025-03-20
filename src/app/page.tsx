@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './components/AuthProvider';
 import { doc, getDoc, getDocs, collection, query, orderBy, limit } from 'firebase/firestore';
@@ -21,14 +21,8 @@ export default function HomePage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      fetchUserPoints();
-    }
-    fetchLeaderboard();
-  }, [user]);
-
-  const fetchUserPoints = async () => {
+  // Memoize fetchUserPoints to avoid redefinition on every render
+  const fetchUserPoints = useCallback(async () => {
     if (user) {
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
@@ -36,7 +30,14 @@ export default function HomePage() {
         setUserPoints(userDoc.data()?.points || 0);
       }
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserPoints();
+    }
+    fetchLeaderboard();
+  }, [user, fetchUserPoints]); // Include fetchUserPoints in the dependency array
 
   const fetchLeaderboard = async () => {
     try {

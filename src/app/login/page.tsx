@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link'; // Import Link for client-side navigation
-import { FaHome } from 'react-icons/fa'; // Import the house icon
+import Link from 'next/link';
+import { FaHome, FaEnvelope, FaLock } from 'react-icons/fa';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState(''); // Holds the email
@@ -71,92 +71,133 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen relative">
-      <form onSubmit={handleLogin} className="bg-white p-5 rounded-2xl border-2 border-gray-200 shadow-lg w-96">
-        <h2 className="text-4xl font-bold mb-4 text-black">Welcome Back</h2>
-        <p className="mb-8 font-medium text-lg text-gray-600">Welcome Back! Please enter your details.</p>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        {successMessage && <p className="text-green-500 text-sm mb-2">{successMessage}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 relative">
+        {/* Main Form Card */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Welcome Back</h2>
+            <p className="text-sm text-gray-500">Please sign in to your account</p>
+          </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 mb-4 border-2 border-gray-100 rounded-xl text-black bg-transparent"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 mb-4 border-2 border-gray-100 rounded-xl text-black bg-transparent"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {/* Forgot Password Link */}
-        <div className="mb-4 text-start">
-          <button
-            type="button"
-            onClick={() => setShowForgotPassword(true)}
-            className="text-sm text-customBlue hover:underline"
-          >
-            Forgot Password?
-          </button>
+          {error && (
+            <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm mb-4">
+              {error}
+            </div>
+          )}
+          
+          {successMessage && (
+            <div className="bg-green-50 text-green-500 p-3 rounded-lg text-sm mb-4">
+              {successMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <div className="relative">
+                <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="relative">
+                <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Signing in...
+                </span>
+              ) : (
+                'Sign in'
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Don&apos;t have an account?{' '}
+              <Link href="../register" className="font-medium text-blue-600 hover:text-blue-500">
+                Create one now
+              </Link>
+            </p>
+          </div>
         </div>
+
+        {/* Home Button */}
         <button
-          type="submit"
-          className="w-full py-3 bg-customBlue font-bold text-lg text-white rounded-xl disabled:bg-gray-400 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.03] ease-in-out"
-          disabled={isLoading}
+          onClick={() => router.push('/')}
+          className="fixed bottom-8 right-8 bg-white p-4 rounded-full shadow-lg text-blue-600 hover:text-blue-500 hover:shadow-xl transition-all duration-300"
         >
-          {isLoading ? 'Logging in...' : 'Login'}
+          <FaHome size={24} />
         </button>
-
-        {/* Link to register page */}
-        <div className="mt-4 text-center">
-          <p className="text-black font-medium text-base">
-            Don&apos;t have an account?{' '}
-            <Link href="../../pages/register" className="ml-2 text-customBlue hover:underline font-medium">
-              Register
-            </Link>
-          </p>
-        </div>
-      </form>
-
-      {/* Floating Home Button */}
-      <button
-        onClick={() => router.push('/')}
-        className="fixed bottom-10 right-10 bg-customBlue p-6 rounded-full shadow-lg text-white hover:bg-customOrange transition ease-in-out duration-300"
-      >
-        <FaHome size={28} />
-      </button>
+      </div>
 
       {/* Forgot Password Modal */}
       {showForgotPassword && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-semibold mb-4 text-black text-center">Forgot Password</h2>
-            {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-            <form onSubmit={handleForgotPassword}>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full p-3 mb-4 border rounded text-black"
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-                required
-              />
-              <div className="flex justify-between">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md transform transition-all">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Reset Password</h3>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="relative">
+                <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="flex space-x-3">
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-customBlue text-white rounded active:scale-[.98] active:duration-75 transition-all hover:scale-[1.05] ease-in-out"
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Send Reset Link
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowForgotPassword(false)}
-                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                  className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   Cancel
                 </button>

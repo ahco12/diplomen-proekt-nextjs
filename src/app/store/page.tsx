@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import {
   collection,
@@ -61,10 +61,26 @@ export default function StorePage() {
   const [selectedCompany, setSelectedCompany] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"pointsLow" | "pointsHigh">("pointsLow");
 
+  // Memoize fetchUserData to avoid redefinition on every render
+  const fetchUserData = useCallback(async () => {
+    if (!user) return;
+
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      setUserPoints(data?.points || 0);
+      setPointsUsed(data?.pointsUsed || 0);
+    } else {
+      console.error("User document does not exist!");
+    }
+  }, [user]);
+
   useEffect(() => {
     fetchStoreItems();
     if (user) fetchUserData();
-  }, [user]);
+  }, [user, fetchUserData]); // Include fetchUserData in the dependency array
 
   useEffect(() => {
     let filtered = [...storeItems];
@@ -161,20 +177,6 @@ export default function StorePage() {
     setStoreItems(items);
     setFilteredItems(items);
     setLoading(false);
-  };
-
-  const fetchUserData = async () => {
-    if (user) {
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        setUserPoints(data?.points || 0);
-        setPointsUsed(data?.pointsUsed || 0);
-      } else {
-        console.error("User document does not exist!");
-      }
-    }
   };
 
   const confirmRedeem = (item: StoreItem) => {

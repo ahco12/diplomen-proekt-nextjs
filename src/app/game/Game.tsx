@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
@@ -38,9 +38,22 @@ export default function Quiz() {
     fetchNewQuestions();
   }, []);
 
-  useEffect(() => {
-    if (user) fetchUserPoints();
+  // Memoize fetchUserPoints to avoid redefinition on every render
+  const fetchUserPoints = useCallback(async (): Promise<void> => {
+    if (user) {
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        setInitialPoints(userDoc.data().points || 0);
+      }
+    }
   }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserPoints();
+    }
+  }, [user, fetchUserPoints]); // Include fetchUserPoints in the dependency array
 
   useEffect(() => {
     return () => {
@@ -49,16 +62,6 @@ export default function Quiz() {
       }
     };
   }, [pointsInterval]);
-
-  const fetchUserPoints = async (): Promise<void> => {
-    if (user) {
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        setInitialPoints(userDoc.data().points || 0);
-      }
-    }
-  };
 
   const fetchNewQuestions = async () => {
     try {

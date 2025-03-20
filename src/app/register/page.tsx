@@ -6,7 +6,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebaseConfig';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaHome } from 'react-icons/fa';
+import { FaHome, FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState<string>(''); // New state for username
@@ -47,64 +47,87 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <form onSubmit={handleRegister} className="bg-white p-5 rounded-2xl border-2 border-gray-200 shadow-lg w-96">
-        <h2 className="text-4xl font-bold mb-4 text-black flex justify-center">Register</h2>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 relative">
+        {/* Main Form Card */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Create Account</h2>
+            <p className="text-sm text-gray-500">Join us and start earning while learning</p>
+          </div>
 
-        {/* Username Input */}
-        <input
-          type="text"
-          placeholder="Username"
-          className="w-full p-3 mb-4 border-2 border-gray-100 rounded-xl text-black bg-transparent"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
+          {error && (
+            <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm mb-4">
+              {error}
+            </div>
+          )}
 
-        {/* Email Input */}
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 mb-4 border-2 border-gray-100 rounded-xl text-black bg-transparent"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+          <form onSubmit={handleRegister} className="space-y-6">
+            {/* Username Input */}
+            <div className="relative">
+              <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Username"
+                className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
 
-        {/* Password Input */}
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 mb-4 border-2 border-gray-100 rounded-xl text-black bg-transparent"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+            {/* Email Input */}
+            <div className="relative">
+              <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="email"
+                placeholder="Email address"
+                className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-        {/* Register Button */}
-        <button type="submit" className="w-full py-3 bg-customBlue font-bold text-lg text-white rounded-xl disabled:bg-gray-400 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.03] ease-in-out">
-          Register
-        </button>
+            {/* Password Input */}
+            <div className="relative">
+              <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
-        {/* Link to Login */}
-        <div className="mt-4 text-center">
-          <p className="text-sm text-black">
-            Already have an account?{' '}
-            <Link href="../../pages/login" className="text-blue-500 hover:underline">
-              Log in
-            </Link>
-          </p>
+            <button
+              type="submit"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
+            >
+              Create Account
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{' '}
+              <Link href="../login" className="font-medium text-blue-600 hover:text-blue-500">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
-      </form>
 
-      {/* Floating Home Button */}
-      <button
-        onClick={() => router.push('/')}
-        className="fixed bottom-10 right-10 bg-customBlue p-6 rounded-full shadow-lg text-white hover:bg-customOrange transition ease-in-out duration-300"
-      >
-        <FaHome size={28} />
-      </button>
+        {/* Home Button */}
+        <button
+          onClick={() => router.push('/')}
+          className="fixed bottom-8 right-8 bg-white p-4 rounded-full shadow-lg text-blue-600 hover:text-blue-500 hover:shadow-xl transition-all duration-300"
+        >
+          <FaHome size={24} />
+        </button>
+      </div>
     </div>
   );
 };

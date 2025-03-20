@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useAuth } from "../components/AuthProvider";
@@ -37,14 +37,8 @@ export default function EarnMorePage() {
   const [multiplier, setMultiplier] = useState<number>(1); // Current points multiplier
   const [gameStarted, setGameStarted] = useState<boolean>(false); // Track if the game has started
 
-  useEffect(() => {
-    if (user) {
-      fetchUserPoints();
-    }
-  }, [user]);
-
-  // Fetch user's total points from Firestore
-  const fetchUserPoints = async () => {
+  // Memoize fetchUserPoints to avoid redefinition on every render
+  const fetchUserPoints = useCallback(async () => {
     if (!user) return;
 
     const userDocRef = doc(db, "users", user.uid);
@@ -54,7 +48,13 @@ export default function EarnMorePage() {
       const data = userDocSnap.data();
       setUserPoints(data.points || 0);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserPoints();
+    }
+  }, [user, fetchUserPoints]); // Include fetchUserPoints in the dependency array
 
   // Generate a random mathematical question
   const generateQuestion = (): Question => {

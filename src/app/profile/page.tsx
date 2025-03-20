@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig"; // Adjust path if needed
 import { useAuth } from "../components/AuthProvider"; // Adjust path if needed
@@ -24,19 +24,14 @@ export default function ProfilePage() {
   const [redeemedItems, setRedeemedItems] = useState<RedeemedItem[]>([]);
   const [selectedGiftCard, setSelectedGiftCard] = useState<RedeemedItem | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      fetchUserProfile();
-    }
-  }, [user]);
-
-  const fetchUserProfile = async () => {
+  // Memoize fetchUserProfile to avoid redefinition on every render
+  const fetchUserProfile = useCallback(async () => {
     if (!user) return;
-  
+
     try {
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
-  
+
       if (userDoc.exists()) {
         const userData = userDoc.data();
         setUsername(userData?.username ?? (user.email ? user.email.split("@")[0] : "User"));
@@ -48,9 +43,13 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
-  };
-  
-  
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user, fetchUserProfile]); // Include fetchUserProfile in the dependency array
 
   const fetchGiftCardDetails = async (id: string) => {
     try {
