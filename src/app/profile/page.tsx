@@ -108,9 +108,9 @@ export default function ProfilePage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                Welcome back, {username}!
+                Здравей отново, {username}!
               </h1>
-              <p className="text-gray-500 mt-1">Your Learning Dashboard</p>
+              <p className="text-gray-500 mt-1">Вашето табло</p>
             </div>
           </div>
 
@@ -119,7 +119,7 @@ export default function ProfilePage() {
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-100">Available Points</p>
+                  <p className="text-blue-100">Налични точки</p>
                   <h3 className="text-3xl font-bold mt-1">{points}</h3>
                 </div>
                 <div className="text-3xl">🏆</div>
@@ -129,7 +129,7 @@ export default function ProfilePage() {
             <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100">Points Used</p>
+                  <p className="text-green-100">Използвани точки</p>
                   <h3 className="text-3xl font-bold mt-1">{pointsUsed}</h3>
                 </div>
                 <div className="text-3xl">💎</div>
@@ -139,7 +139,7 @@ export default function ProfilePage() {
             <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100">Questions Answered</p>
+                  <p className="text-purple-100">Отговорени върпоси</p>
                   <h3 className="text-3xl font-bold mt-1">{questionsAnswered}</h3>
                 </div>
                 <div className="text-3xl">✨</div>
@@ -151,14 +151,14 @@ export default function ProfilePage() {
         {/* Gift Cards Section */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">
-            Your Gift Cards
+            Вашите карти
           </h2>
           
           {redeemedItems.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-5xl mb-4">🎁</div>
-              <p className="text-gray-500">No gift cards redeemed yet.</p>
-              <p className="text-sm text-gray-400 mt-2">Start earning points to get your first gift card!</p>
+              <p className="text-gray-500">Все още няма осребрени карти.</p>
+              <p className="text-sm text-gray-400 mt-2">Спечелете точки за да си купите карти!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -176,7 +176,7 @@ export default function ProfilePage() {
                       </p>
                     </div>
                     <span className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
-                      View Details →
+                      Детайли →
                     </span>
                   </div>
                 </div>
@@ -197,7 +197,7 @@ export default function ProfilePage() {
               
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-xl p-4">
-                  <p className="text-sm text-gray-500 mb-1">Gift Card Code</p>
+                  <p className="text-sm text-gray-500 mb-1">Код на картата</p>
                   <p className="font-mono text-lg font-medium">
                     {selectedGiftCard.giftCardCode ?? "Not Available"}
                   </p>
@@ -205,15 +205,15 @@ export default function ProfilePage() {
 
                 <div className="flex gap-4">
                   <div className="flex-1 bg-gray-50 rounded-xl p-4">
-                    <p className="text-sm text-gray-500 mb-1">Points Cost</p>
+                    <p className="text-sm text-gray-500 mb-1">Струваща</p>
                     <p className="font-medium">
-                      {selectedGiftCard.pointsRequired ?? "Unknown"} points
+                      {selectedGiftCard.pointsRequired ?? "Unknown"} точки
                     </p>
                   </div>
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-4">
-                  <p className="text-sm text-gray-500 mb-1">Description</p>
+                  <p className="text-sm text-gray-500 mb-1">Описание</p>
                   <p className="text-gray-700">
                     {selectedGiftCard.description ?? "No description available"}
                   </p>
@@ -225,7 +225,7 @@ export default function ProfilePage() {
                   onClick={() => setSelectedGiftCard(null)}
                   className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
                 >
-                  Close
+                  Затвори
                 </button>
               </div>
             </div>

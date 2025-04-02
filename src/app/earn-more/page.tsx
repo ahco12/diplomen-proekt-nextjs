@@ -187,7 +187,7 @@ export default function EarnMorePage() {
       <div className="max-w-4xl mx-auto mb-8">
         <div className="flex justify-between items-center bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
           <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200">
-            Math Challenge
+            Математическо предизвикателство
           </h1>
           <div className="flex items-center gap-4">
             <div className="text-right">

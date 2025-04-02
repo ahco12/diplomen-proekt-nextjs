@@ -55,7 +55,7 @@ const Login: React.FC = () => {
       }
 
       await sendPasswordResetEmail(auth, resetEmail);
-      setSuccessMessage('Password reset email sent! Please check your inbox.');
+      setSuccessMessage('Беше изпратен имейл за промяна на паролата! Моля проверете имейла си.');
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -76,8 +76,8 @@ const Login: React.FC = () => {
         {/* Main Form Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Welcome Back</h2>
-            <p className="text-sm text-gray-500">Please sign in to your account</p>
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Здравейте отново</h2>
+            <p className="text-sm text-gray-500">Моля влезте в акаунта си</p>
           </div>
 
           {error && (
@@ -98,7 +98,7 @@ const Login: React.FC = () => {
                 <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
-                  placeholder="Email address"
+                  placeholder="Имейл"
                   className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -112,7 +112,7 @@ const Login: React.FC = () => {
                 <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="password"
-                  placeholder="Password"
+                  placeholder="Парола"
                   className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -127,7 +127,7 @@ const Login: React.FC = () => {
                 onClick={() => setShowForgotPassword(true)}
                 className="text-sm text-blue-600 hover:text-blue-500 font-medium"
               >
-                Forgot Password?
+                Забравена парола?
               </button>
             </div>
 
@@ -142,7 +142,7 @@ const Login: React.FC = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Signing in...
+                  Влизане...
                 </span>
               ) : (
                 'Sign in'
@@ -152,9 +152,9 @@ const Login: React.FC = () => {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don&apos;t have an account?{' '}
+              Нямате акаунт?{' '}
               <Link href="../register" className="font-medium text-blue-600 hover:text-blue-500">
-                Create one now
+                Направете си акаунт.
               </Link>
             </p>
           </div>
@@ -173,13 +173,13 @@ const Login: React.FC = () => {
       {showForgotPassword && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md transform transition-all">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Reset Password</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Промени паролата си</h3>
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div className="relative">
                 <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder="Въведете имейл адреса си"
                   className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   value={resetEmail}
                   onChange={(e) => setResetEmail(e.target.value)}
@@ -192,14 +192,14 @@ const Login: React.FC = () => {
                   type="submit"
                   className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  Send Reset Link
+                  Прати Reset Link.
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowForgotPassword(false)}
                   className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
                 >
-                  Cancel
+                  Откажи
                 </button>
               </div>
             </form>

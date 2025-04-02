@@ -245,12 +245,12 @@ export default function StorePage() {
         }}
       />
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Store</h1>
+        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Магазин</h1>
 
         {/* Points Display */}
         <div className="bg-white p-4 rounded-lg shadow-md mb-6">
           <p className="text-xl font-medium text-center text-gray-700">
-            Available Points: <span className="text-blue-600 font-semibold">{userPoints}</span>
+          Налични точки: <span className="text-blue-600 font-semibold">{userPoints}</span>
           </p>
         </div>
 
@@ -260,7 +260,7 @@ export default function StorePage() {
             {/* Search Bar */}
             <input
               type="text"
-              placeholder="Search items..."
+              placeholder="търсенете карти..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
@@ -272,7 +272,7 @@ export default function StorePage() {
               onChange={(e) => setSelectedCompany(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
             >
-              <option value="all">All Companies</option>
+              <option value="all">Всички компании</option>
               {companies.map((company) => (
                 <option key={company} value={company}>
                   {company}
@@ -288,8 +288,8 @@ export default function StorePage() {
               }
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
             >
-              <option value="pointsLow">Points: Low to High</option>
-              <option value="pointsHigh">Points: High to Low</option>
+              <option value="pointsLow">Точки: Възходящ ред</option>
+              <option value="pointsHigh">Точки: Низходящ ред</option>
             </select>
           </div>
         </div>
@@ -325,7 +325,7 @@ export default function StorePage() {
                   <p className="text-gray-500 text-sm mb-4">{item.description}</p>
                   <div className="flex justify-between items-center">
                     <p className="text-lg font-bold text-blue-600">
-                      {item.pointsRequired} points
+                      {item.pointsRequired} точки
                     </p>
                     <button
                       onClick={() => confirmRedeem(item)}
@@ -336,7 +336,7 @@ export default function StorePage() {
                       }`}
                       disabled={userPoints < item.pointsRequired}
                     >
-                      Redeem
+                      Осребряване
                     </button>
                   </div>
                 </div>
@@ -350,18 +350,18 @@ export default function StorePage() {
       {showConfirmation && selectedItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-xl font-bold mb-4">Confirm Redemption</h2>
+            <h2 className="text-xl font-bold mb-4">Потвърди осребряването</h2>
             <p>
               Redeem{" "}
               <span className="font-semibold">{selectedItem.name}</span> for{" "}
-              {selectedItem.pointsRequired} points?
+              {selectedItem.pointsRequired} точки?
             </p>
             <div className="mt-4 flex justify-center space-x-3">
               <button
                 className="px-4 py-2 bg-gray-300 rounded-md"
                 onClick={() => setShowConfirmation(false)}
               >
-                Cancel
+                Откажи
               </button>
               <button
                 className="px-4 py-2 bg-blue-600 text-white rounded-md"
@@ -380,17 +380,17 @@ export default function StorePage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <h2 className="text-xl font-bold text-green-600 mb-4">
-              Redemption Successful!
+              Осребряването е успешно!
             </h2>
             <p className="text-gray-700">
-              Your item has been redeemed successfully. Check your profile for
-              the gift card code.
+              Вашият артикул беше купен успешно. Проверете вашия профил за
+              кода на подаръчната карта.
             </p>
             <button
               className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
               onClick={() => setShowSuccess(false)}
             >
-              Close
+              Затвори
             </button>
           </div>
         </div>

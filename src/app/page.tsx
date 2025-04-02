@@ -64,7 +64,7 @@ export default function HomePage() {
 
   const handleGameModeClick = (path: string) => {
     if (!user) {
-      toast.error('Please log in to access this game mode!', {
+      toast.error('Моля влезте в профила си за да продължите!', {
         style: {
           background: '#EF4444',
           color: 'white',
@@ -90,13 +90,13 @@ export default function HomePage() {
               Learn & Earn
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-blue-300 mb-6 md:mb-8">Your Journey to Knowledge and Rewards</p>
+          <p className="text-xl md:text-2xl text-blue-300 mb-6 md:mb-8">Вашето пътуване към знанието и наградите</p>
           {user && (
             <div className="inline-block bg-gradient-to-r from-blue-500/20 to-purple-500/20 p-4 md:p-6 rounded-2xl backdrop-blur-sm">
               <div className="flex items-center gap-3 md:gap-4">
                 <FaCoins className="text-yellow-400 text-2xl md:text-3xl animate-pulse" />
                 <div>
-                  <p className="text-xs md:text-sm text-blue-300">Your Points Balance</p>
+                  <p className="text-xs md:text-sm text-blue-300">Вашите точки</p>
                   <p className="text-2xl md:text-4xl font-bold text-yellow-400">{userPoints.toLocaleString()}</p>
                 </div>
               </div>
@@ -115,8 +115,8 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 rounded-2xl animate-gradient-x"></div>
             <div className="relative bg-[#1a1740] p-8 rounded-2xl h-full transition-transform duration-300 group-hover:scale-[0.99]">
               <FaGamepad className="text-5xl mb-4 text-blue-400" />
-              <h3 className="text-2xl font-bold mb-2">Classic Quiz Mode</h3>
-              <p className="text-blue-300">Test your knowledge with our millionaire-style quiz!</p>
+              <h3 className="text-2xl font-bold mb-2">Класическа викторина</h3>
+              <p className="text-blue-300">Проверете вашите знания със серия от въпроси!</p>
             </div>
           </button>
 
@@ -127,8 +127,8 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-blue-600 to-green-600 rounded-2xl animate-gradient-x"></div>
             <div className="relative bg-[#1a1740] p-8 rounded-2xl h-full transition-transform duration-300 group-hover:scale-[0.99]">
               <FaCoins className="text-5xl mb-4 text-yellow-400" />
-              <h3 className="text-2xl font-bold mb-2">Speed Math Challenge</h3>
-              <p className="text-blue-300">Quick math problems for quick rewards!</p>
+              <h3 className="text-2xl font-bold mb-2">Математическо предизвикателство</h3>
+              <p className="text-blue-300">Бързи математически задачи за бързи награди, но с уловка!</p>
             </div>
           </button>
         </div>
@@ -140,25 +140,25 @@ export default function HomePage() {
           <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 p-6 rounded-2xl backdrop-blur-sm">
             <div className="flex items-center gap-4 mb-4">
               <FaTrophy className="text-3xl text-yellow-400" />
-              <h3 className="text-xl font-bold">Compete</h3>
+              <h3 className="text-xl font-bold">Състезавайте се</h3>
             </div>
-            <p className="text-blue-300">Challenge yourself and climb the leaderboard!</p>
+            <p className="text-blue-300">Предизвикайте себе си и се изкачете в класацията!</p>
           </div>
 
           <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 p-6 rounded-2xl backdrop-blur-sm">
             <div className="flex items-center gap-4 mb-4">
               <FaCoins className="text-3xl text-yellow-400" />
-              <h3 className="text-xl font-bold">Earn</h3>
+              <h3 className="text-xl font-bold">Печели</h3>
             </div>
-            <p className="text-blue-300">Accumulate points with each correct answer!</p>
+            <p className="text-blue-300">Натрупвайте точки с всеки правилен отговор!</p>
           </div>
 
           <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 p-6 rounded-2xl backdrop-blur-sm">
             <div className="flex items-center gap-4 mb-4">
               <FaStore className="text-3xl text-yellow-400" />
-              <h3 className="text-xl font-bold">Redeem</h3>
+              <h3 className="text-xl font-bold">Осребри</h3>
             </div>
-            <p className="text-blue-300">Exchange points for amazing rewards!</p>
+            <p className="text-blue-300">Разменете точки за невероятни награди!</p>
           </div>
         </div>
       </div>
@@ -166,7 +166,7 @@ export default function HomePage() {
       {/* Leaderboard Section */}
       <div className="max-w-7xl mx-auto px-4 py-8 md:py-16">
         <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-2xl p-4 md:p-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center">🏆 Top Champions</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center">🏆 Шампиони</h2>
 
           {loadingLeaderboard ? (
             <p className="text-center text-blue-300">Loading leaderboard...</p>
@@ -189,7 +189,7 @@ export default function HomePage() {
                     {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : <FaCrown className="text-yellow-400" />}
                   </div>
                   <p className="font-bold">{player.username}</p>
-                  <p className="text-yellow-400">{player.points.toLocaleString()} points</p>
+                  <p className="text-yellow-400">{player.points.toLocaleString()} точки</p>
                 </div>
               ))}
             </div>

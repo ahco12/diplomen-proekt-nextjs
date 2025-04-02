@@ -93,7 +93,7 @@ const Navbar: React.FC = () => {
               className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
             >
               <FaStore />
-              <span>Store</span>
+              <span>Магазин</span>
             </button>
 
             {/* Centered Play Game Button */}

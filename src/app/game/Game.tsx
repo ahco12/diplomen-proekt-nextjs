@@ -219,7 +219,7 @@ export default function Quiz() {
           {/* Question Card */}
           <div className="mb-4 md:mb-8 p-4 md:p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl">
             <div className="flex justify-between items-center mb-4 md:mb-6">
-              <span className="text-white/80 text-base md:text-lg">Question {currentIndex + 1}/{questions.length}</span>
+              <span className="text-white/80 text-base md:text-lg">Въпрос {currentIndex + 1}/{questions.length}</span>
             </div>
             <h2 className="text-xl md:text-2xl text-white font-medium mb-6 md:mb-8">{currentQuestion.question}</h2>
             
@@ -258,7 +258,7 @@ export default function Quiz() {
         <div className="w-full md:w-80 space-y-3 md:space-y-6">
           {/* Points Card */}
           <div className="p-4 md:p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-            <h3 className="text-lg md:text-xl text-white font-semibold mb-2 md:mb-4">Score</h3>
+            <h3 className="text-lg md:text-xl text-white font-semibold mb-2 md:mb-4">Резултат</h3>
             <div className="text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">
               {animatingPoints || points}
             </div>
@@ -271,7 +271,7 @@ export default function Quiz() {
 
           {/* Progress Card */}
           <div className="p-4 md:p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-            <h3 className="text-lg md:text-xl text-white font-semibold mb-2 md:mb-4">Progress</h3>
+            <h3 className="text-lg md:text-xl text-white font-semibold mb-2 md:mb-4">Прогрес</h3>
             <div className="grid grid-cols-5 gap-1 md:gap-2">
               {questions.map((_, index) => {
                 const isActive = index === currentIndex;
@@ -300,20 +300,20 @@ export default function Quiz() {
       {isGameOver && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 md:p-8 w-full max-w-md">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Game Over!</h2>
-            <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8">Final Score: {points} points</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Край на играта!</h2>
+            <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8">Краен резултат: {points} точки</p>
             <div className="flex flex-col md:flex-row gap-3 md:gap-4">
               <button
                 onClick={handleRestart}
                 className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition"
               >
-                Play Again
+                Играй отново
               </button>
               <button
                 onClick={handleMainMenu}
                 className="w-full py-3 px-6 bg-white/10 hover:bg-white/20 text-white rounded-xl transition"
               >
-                Main Menu
+                Начална страница
               </button>
             </div>
           </div>

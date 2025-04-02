@@ -52,8 +52,8 @@ const Register: React.FC = () => {
         {/* Main Form Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Create Account</h2>
-            <p className="text-sm text-gray-500">Join us and start earning while learning</p>
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Създай акаунт</h2>
+            <p className="text-sm text-gray-500">Присъедини се и започни да печелиш</p>
           </div>
 
           {error && (
@@ -68,7 +68,7 @@ const Register: React.FC = () => {
               <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Username"
+                placeholder="Потребителско име"
                 className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -81,7 +81,7 @@ const Register: React.FC = () => {
               <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="email"
-                placeholder="Email address"
+                placeholder="Имейл"
                 className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -94,7 +94,7 @@ const Register: React.FC = () => {
               <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="Парола"
                 className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -106,15 +106,15 @@ const Register: React.FC = () => {
               type="submit"
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
             >
-              Create Account
+              Създай акаунт
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{' '}
+              Вече имаш акаунт?{' '}
               <Link href="../login" className="font-medium text-blue-600 hover:text-blue-500">
-                Sign in
+                Влез
               </Link>
             </p>
           </div>
