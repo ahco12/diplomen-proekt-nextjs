@@ -45,7 +45,7 @@ const Leaderboard: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold text-center mb-6">🏆 Leaderboard</h1>
+      <h1 className="text-3xl font-bold text-center mb-6">🏆 Класация</h1>
 
       {loading ? (
         <p className="text-center text-gray-500">Loading leaderboard...</p>
@@ -68,7 +68,7 @@ const Leaderboard: React.FC = () => {
                 {index === 0 && <FaCrown className="text-yellow-400 text-xl" />}
                 <span className="text-lg font-medium">{user.username || 'Anonymous'}</span>
               </div>
-              <span className="font-bold text-blue-600">{user.points} pts</span>
+              <span className="font-bold text-blue-600">{user.points} точки</span>
             </li>
           ))}
         </ol>

@@ -6,6 +6,7 @@ import { useAuth } from "./AuthProvider";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
 import { FaUserCircle, FaCoins, FaGamepad, FaStore } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 
 const Navbar: React.FC = () => {
   const router = useRouter();
@@ -45,7 +46,9 @@ const Navbar: React.FC = () => {
     if (user) {
       router.push("/game");
     } else {
-      alert("You must be logged in to play the game.");
+      toast.error("Трябва да сте влезнали в профила за да продължите.", {
+        position: "top-center",
+      });
     }
   };
 
@@ -100,7 +103,7 @@ const Navbar: React.FC = () => {
                      hover:from-yellow-500 hover:to-yellow-600 transform hover:scale-105 transition-all duration-300
                      text-xl z-10"
             >
-              Play Game
+              Играй
               <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg blur opacity-30 group-hover:opacity-50" />
             </button>
 
@@ -110,7 +113,7 @@ const Navbar: React.FC = () => {
               className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
             >
               <FaCoins />
-              <span>Earn More</span>
+              <span>Спечели повече</span>
             </button>
           </div>
 
@@ -173,7 +176,7 @@ const Navbar: React.FC = () => {
                       onClick={() => router.push("/profile")}
                       className="block px-4 py-2 text-left text-blue-200 hover:bg-blue-900 w-full transition-colors duration-300"
                     >
-                      Profile
+                      Профил
                     </button>
 
                     {admin && (
@@ -181,7 +184,7 @@ const Navbar: React.FC = () => {
                         onClick={() => router.push("/admin")}
                         className="block px-4 py-2 text-left text-blue-200 hover:bg-blue-900 w-full transition-colors duration-300"
                       >
-                        Admin Page
+                        Административна страница
                       </button>
                     )}
 
@@ -189,7 +192,7 @@ const Navbar: React.FC = () => {
                       onClick={() => setShowLogoutModal(true)}
                       className="block px-4 py-2 text-left text-red-400 hover:bg-red-900/50 w-full transition-colors duration-300"
                     >
-                      Log Out
+                      Излез
                     </button>
                   </div>
                 )}
@@ -200,13 +203,13 @@ const Navbar: React.FC = () => {
                   onClick={() => router.push("/login")}
                   className="px-3 md:px-4 py-2 text-sm md:text-base text-blue-200 border border-blue-400 rounded-lg hover:bg-blue-900/50"
                 >
-                  Login
+                  Влизане
                 </button>
                 <button
                   onClick={() => router.push("/register")}
                   className="px-3 md:px-5 py-2 text-sm md:text-base bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold rounded-lg"
                 >
-                  Register
+                  Регистрация
                 </button>
               </div>
             )}
@@ -219,7 +222,7 @@ const Navbar: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
           <div className="bg-[#1a1740] border border-blue-500 p-6 rounded-lg shadow-lg w-80">
             <h2 className="text-xl font-semibold text-center mb-4 text-blue-200">
-              Are you sure you want to log out?
+              Сигурни ли сте че искате да излезете?
             </h2>
             <div className="flex justify-center space-x-4">
               <button
@@ -227,14 +230,14 @@ const Navbar: React.FC = () => {
                 className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg 
                           hover:from-red-600 hover:to-red-700 transition-colors duration-300"
               >
-                Yes
+                Да
               </button>
               <button
                 onClick={() => setShowLogoutModal(false)}
                 className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg 
                           hover:from-blue-600 hover:to-blue-700 transition-colors duration-300"
               >
-                No
+                Не
               </button>
             </div>
           </div>

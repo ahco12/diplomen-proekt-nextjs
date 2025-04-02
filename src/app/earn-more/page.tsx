@@ -154,8 +154,8 @@ export default function EarnMorePage() {
   
     setMessage(
       isCorrect
-        ? `✅ Correct! You earned ${pointsChange} points!`
-        : `❌ Incorrect! You lost ${Math.abs(pointsChange)} points. The correct answer was ${question.answer}`
+        ? `✅ Правилно! Спечели ${pointsChange} точки!`
+        : `❌ Неправилно! Загуби ${Math.abs(pointsChange)} точки. Правилният отговор е ${question.answer}`
     );
   
     const userDocRef = doc(db, "users", user.uid);
@@ -174,8 +174,6 @@ export default function EarnMorePage() {
     }, 2000);
   };
   
-  
-
   // Handle Enter key press for answer submission
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && !isNaN(parseFloat(userAnswer))) {
@@ -193,7 +191,7 @@ export default function EarnMorePage() {
           </h1>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-blue-300 text-sm">Your Points</p>
+              <p className="text-blue-300 text-sm">Вашите точки</p>
               <p className="text-2xl font-bold text-yellow-400">{userPoints}</p>
             </div>
           </div>
@@ -214,7 +212,7 @@ export default function EarnMorePage() {
               >
                 <div className="text-center space-y-2">
                   <p className="text-3xl font-bold text-white">{question.equation}</p>
-                  <p className="text-yellow-400 text-sm">Worth {question.points} points</p>
+                  <p className="text-yellow-400 text-sm">За {question.points} точки</p>
                 </div>
 
                 <div className="space-y-4">
@@ -233,7 +231,7 @@ export default function EarnMorePage() {
                     }`}
                     disabled={isNaN(parseFloat(userAnswer))}
                   >
-                    Submit Answer
+                    Провери
                   </button>
                 </div>
 
@@ -265,8 +263,8 @@ export default function EarnMorePage() {
                   className="text-center space-y-6"
                 >
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-white">Ready for the next challenge?</h2>
-                    <p className="text-blue-300">Test your math skills and earn points!</p>
+                    <h2 className="text-2xl font-bold text-white">Готов ли си за следващото предизвикателство?</h2>
+                    <p className="text-blue-300">Тествай твоите умения по математика!</p>
                   </div>
                   <button
                     onClick={() => {
@@ -275,7 +273,7 @@ export default function EarnMorePage() {
                     }}
                     className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200"
                   >
-                    Start New Question
+                    Започни играта
                   </button>
                 </motion.div>
               )
@@ -288,22 +286,22 @@ export default function EarnMorePage() {
       {!question && gameStarted && (
         <div className="max-w-2xl mx-auto mt-8">
           <div className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">Game Over</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">Край на играта</h2>
 
             <p className="text-lg mb-2 text-white">
-              You {sessionPointsChange >= 0 ? 'earned' : 'lost'}{" "}
+              Ти {sessionPointsChange >= 0 ? 'earned' : 'lost'}{" "}
               <span className={sessionPointsChange >= 0 ? "text-green-400" : "text-red-400"}>
-                {Math.abs(sessionPointsChange)} points
+                {Math.abs(sessionPointsChange)} точки
               </span>{" "}
-              this session.
+              тази сесия.
             </p>
 
             <p className="text-blue-300 mb-4">
-              Your total points are now:{" "}
+              Твоите точки сега са:{" "}
               <span className="text-yellow-400 font-bold">{userPoints}</span>
             </p>
 
-            <p className="text-blue-300 mb-4">Max streak of correct answers: {maxStreak}</p>
+            <p className="text-blue-300 mb-4">Серия от правилни отговори: {maxStreak}</p>
 
             <button
               onClick={() => {
@@ -313,7 +311,7 @@ export default function EarnMorePage() {
               }}
               className="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200"
             >
-              Play Again
+              Играй отново
             </button>
           </div>
         </div>
