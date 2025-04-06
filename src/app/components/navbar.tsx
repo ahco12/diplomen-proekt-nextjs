@@ -86,7 +86,7 @@ const Navbar: React.FC = () => {
           </button>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="hidden md:block fixed  left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div className="flex justify-center items-center gap-12">
               {/* Store Button */}
               <button
