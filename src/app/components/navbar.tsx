@@ -158,7 +158,7 @@
            )}
  
            {/* Auth Buttons */}
-           <div className="relative z-10">
+           <div className="relative z-50">
              {user ? (
                <div>
                  <button
