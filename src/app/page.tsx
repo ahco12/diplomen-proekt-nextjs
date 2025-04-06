@@ -69,6 +69,8 @@ export default function HomePage() {
           background: '#EF4444',
           color: 'white',
         },
+        duration: 2000, // Toast will stay for 2 seconds
+        position: 'top-center',
       });
       return;
     }

@@ -144,7 +144,7 @@ const AdminPage: React.FC = () => {
 
   const addAnswerField = () => {
     if (answers.length >= 5) {
-      toast.error('You can only add up to 5 answers.');
+      toast.error('Можете да добавите до 5 въпроса.');
       return;
     }
     setAnswers([...answers, { answer: '', isCorrect: false }]);
@@ -155,15 +155,15 @@ const AdminPage: React.FC = () => {
   // --- Handle Add/Update Question ---
   const handleAddOrUpdateQuestion = async () => {
     if (!questionText.trim()) {
-      toast.error('Question cannot be empty!');
+      toast.error('Върпосът не може да бъде празен!');
       return;
     }
     if (answers.length < 2) {
-      toast.error('Add at least two answers.');
+      toast.error('Трябват поне 2 отговора.');
       return;
     }
     if (!hasCorrectAnswer()) {
-      toast.error('You must select at least one correct answer.');
+      toast.error('Трябва един правилен отговор.');
       return;
     }
 
@@ -202,16 +202,16 @@ const AdminPage: React.FC = () => {
     });
 
     toast.promise(promise, {
-      loading: 'Saving question...',
-      success: 'Question saved successfully!',
-      error: 'Failed to save question',
+      loading: 'Запазване на върпоса...',
+      success: 'Въпросът беше запазен успешно!',
+      error: 'Неуспешно запазване на въпроса.',
     });
   };
 
   // --- Handle Add/Update Store Item ---
   const handleAddStoreItem = async () => {
     if (!selectedCompany || !itemName.trim() || !itemDescription.trim() || itemPointsRequired <= 0) {
-      toast.error('Please fill all fields correctly!');
+      toast.error('Моля попълнете всички полета!');
       return;
     }
 
@@ -255,14 +255,14 @@ const AdminPage: React.FC = () => {
     });
 
     toast.promise(promise, {
-      loading: 'Saving store item...',
-      success: 'Store item saved successfully!',
-      error: 'Failed to save store item',
+      loading: 'Запазване на продукт...',
+      success: 'Продуктът беше запазен успешно!',
+      error: 'Неуспешно запазване на продукта.',
     });
   };
 
   const handleDeleteQuestion = async (id: string) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this question?');
+    const confirmDelete = window.confirm('Сигурни ли сте че искате да изтриете въпроса?');
     if (!confirmDelete) return;
 
     const promise = new Promise(async (resolve, reject) => {
@@ -276,14 +276,14 @@ const AdminPage: React.FC = () => {
     });
 
     toast.promise(promise, {
-      loading: 'Deleting question...',
-      success: 'Question deleted successfully!',
-      error: 'Failed to delete question',
+      loading: 'Изтриване на въпрос...',
+      success: 'Върпосът беше успешно изтрит!',
+      error: 'Неуспешно изтриване на въпроса',
     });
   };
 
   const handleDeleteStoreItem = async (item: StoreItem) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete "${item.name}"?`);
+    const confirmDelete = window.confirm(`Сигурни ли сте че искате да изтриете "${item.name}"?`);
     if (!confirmDelete) return;
 
     const promise = new Promise(async (resolve, reject) => {
@@ -301,9 +301,9 @@ const AdminPage: React.FC = () => {
     });
 
     toast.promise(promise, {
-      loading: 'Deleting store item...',
-      success: 'Store item deleted successfully!',
-      error: 'Failed to delete store item',
+      loading: 'Изтриване на продукт...',
+      success: 'Продуктът беше успешно изтрит!',
+      error: 'Неуспешно изтриване на продукта',
     });
   };
 
@@ -368,7 +368,7 @@ const AdminPage: React.FC = () => {
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Административно табло</h1>
             <div className="flex space-x-4">
               <button
                 onClick={() => setActiveSection('questions')}
@@ -377,7 +377,7 @@ const AdminPage: React.FC = () => {
                     ? 'bg-indigo-600 text-white' 
                     : 'text-gray-700 hover:bg-gray-100'}`}
               >
-                Questions
+                Въпроси
               </button>
               <button
                 onClick={() => setActiveSection('storeItems')}
@@ -386,7 +386,7 @@ const AdminPage: React.FC = () => {
                     ? 'bg-indigo-600 text-white' 
                     : 'text-gray-700 hover:bg-gray-100'}`}
               >
-                Store Items
+                Продукти
               </button>
             </div>
           </div>
@@ -414,27 +414,27 @@ const AdminPage: React.FC = () => {
                 />
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Difficulty</label>
+                  <label className="block text-sm font-medium text-gray-700">Трудност</label>
                   <select
                     value={difficulty}
                     onChange={e => setDifficulty(e.target.value as 'easy' | 'medium' | 'hard')}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   >
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
+                    <option value="easy">Лесно</option>
+                    <option value="medium">Средно</option>
+                    <option value="hard">Трудно</option>
                   </select>
                 </div>
 
                 {/* Answers Section */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-sm font-medium text-gray-700">Answers</h3>
+                    <h3 className="text-sm font-medium text-gray-700">Отговори</h3>
                     <button
                       onClick={addAnswerField}
                       className="inline-flex items-center px-5 py-1.5 border border-transparent text-xs font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
                     >
-                      Add Answer
+                      Добави отговор
                     </button>
                   </div>
                   
@@ -470,14 +470,14 @@ const AdminPage: React.FC = () => {
                     onClick={handleAddOrUpdateQuestion}
                     className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
-                    {editingQuestionId ? 'Update Question' : 'Add Question'}
+                    {editingQuestionId ? 'Редактирай въпрос' : 'Добави Въпрос'}
                   </button>
                   {editingQuestionId && (
                     <button
                       onClick={resetQuestionForm}
                       className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                      Cancel
+                      Откажи
                     </button>
                   )}
                 </div>
@@ -488,7 +488,7 @@ const AdminPage: React.FC = () => {
             <div className="bg-white shadow rounded-lg overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-medium text-gray-900">Questions</h2>
+                  <h2 className="text-lg font-medium text-gray-900">Въпроси</h2>
                   <div className="flex space-x-2">
                     {['easy', 'medium', 'hard'].map(category => (
                       <button
@@ -518,13 +518,13 @@ const AdminPage: React.FC = () => {
                           onClick={() => handleEditQuestion(question)}
                           className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
                         >
-                          Edit
+                          Редактиране
                         </button>
                         <button
                           onClick={() => handleDeleteQuestion(question.id)}
                           className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
                         >
-                          Delete
+                          Изтриване
                         </button>
                       </div>
                     </div>
@@ -553,7 +553,7 @@ const AdminPage: React.FC = () => {
                     onChange={e => setSelectedCompany(e.target.value)}
                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   >
-                    <option value="">Select a company</option>
+                    <option value="">Изберете компания</option>
                     {companies.map(company => (
                       <option key={company} value={company}>
                         {company}
@@ -563,20 +563,20 @@ const AdminPage: React.FC = () => {
                 </div>
                 <input
                   type="text"
-                  placeholder="Enter item name"
+                  placeholder="Име на продукта"
                   value={itemName}
                   onChange={e => setItemName(e.target.value)}
                   className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
                 <textarea
-                  placeholder="Enter item description"
+                  placeholder="Описание на продукта"
                   value={itemDescription}
                   onChange={e => setItemDescription(e.target.value)}
                   className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
                 <input
                   type="number"
-                  placeholder="Enter points required"
+                  placeholder="Необходими точки"
                   value={itemPointsRequired}
                   onChange={e => setItemPointsRequired(Number(e.target.value))}
                   className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
@@ -586,14 +586,14 @@ const AdminPage: React.FC = () => {
                     onClick={handleAddStoreItem}
                     className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
-                    {editingStoreItemId ? 'Update Store Item' : 'Add Store Item'}
+                    {editingStoreItemId ? 'Редактирай продукт' : 'Добави продукт'}
                   </button>
                   {editingStoreItemId && (
                     <button
                       onClick={resetStoreItemForm}
                       className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                      Cancel
+                      Откажи
                     </button>
                   )}
                 </div>
@@ -604,7 +604,7 @@ const AdminPage: React.FC = () => {
             <div className="bg-white shadow rounded-lg overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-medium text-gray-900">Store Items</h2>
+                  <h2 className="text-lg font-medium text-gray-900">Продукти</h2>
                 </div>
               </div>
               
@@ -622,13 +622,13 @@ const AdminPage: React.FC = () => {
                           onClick={() => handleEditStoreItem(item)}
                           className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
                         >
-                          Edit
+                          Редактиране
                         </button>
                         <button
                           onClick={() => handleDeleteStoreItem(item)}
                           className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
                         >
-                          Delete
+                          Изтриване
                         </button>
                       </div>
                     </div>

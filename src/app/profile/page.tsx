@@ -192,7 +192,7 @@ export default function ProfilePage() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
             <div className="p-6">
               <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                Gift Card Details
+                Детайли за картата
               </h3>
               
               <div className="space-y-4">

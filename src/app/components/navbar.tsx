@@ -86,7 +86,7 @@ const Navbar: React.FC = () => {
           </button>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-12">
+          <div className="hidden md:flex justify-center items-center gap-12">
             {/* Store Button */}
             <button
               onClick={() => handleNavigation("Store")}
