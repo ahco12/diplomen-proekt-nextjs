@@ -63,8 +63,41 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-[#1a1740] to-[#2a1f6f] shadow-lg p-4">
+    <nav className="bg-gradient-to-r from-[#1a1740] to-[#2a1f6f] shadow-lg p-4 relative">
       <div className="max-w-full mx-auto">
+        {/* Main Buttons (Always Centered on Desktop) */}
+        <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 top-0 items-center gap-12">
+          {/* Store Button */}
+          <button
+            onClick={() => handleNavigation("Store")}
+            className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
+          >
+            <FaStore />
+            <span>Магазин</span>
+          </button>
+
+          {/* Centered Play Game Button */}
+          <button
+            onClick={handleGameNavigation}
+            className="relative px-8 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold rounded-lg shadow-lg 
+                     hover:from-yellow-500 hover:to-yellow-600 transform hover:scale-105 transition-all duration-300
+                     text-xl z-10"
+          >
+            Играй
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg blur opacity-30 group-hover:opacity-50" />
+          </button>
+
+          {/* Earn More Button */}
+          <button
+            onClick={() => handleNavigation("earn-more")}
+            className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
+          >
+            <FaCoins />
+            <span>Спечели повече</span>
+          </button>
+        </div>
+
+        {/* Top Bar (Logo and Mobile Menu Button) */}
         <div className="flex justify-between items-center">
           {/* Logo */}
           <button
@@ -75,90 +108,23 @@ const Navbar: React.FC = () => {
             <span className="hidden sm:inline">Learn & Earn</span>
           </button>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button (Always Centered on Mobile) */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-white p-2"
+            className="md:hidden absolute left-1/2 transform -translate-x-1/2 text-white p-2"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={isMobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+              />
             </svg>
           </button>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-12">
-            {/* Store Button */}
-            <button
-              onClick={() => handleNavigation("Store")}
-              className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
-            >
-              <FaStore />
-              <span>Магазин</span>
-            </button>
-
-            {/* Centered Play Game Button */}
-            <button
-              onClick={handleGameNavigation}
-              className="relative px-8 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold rounded-lg shadow-lg 
-                     hover:from-yellow-500 hover:to-yellow-600 transform hover:scale-105 transition-all duration-300
-                     text-xl z-10"
-            >
-              Играй
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg blur opacity-30 group-hover:opacity-50" />
-            </button>
-
-            {/* Earn More Button */}
-            <button
-              onClick={() => handleNavigation("earn-more")}
-              className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
-            >
-              <FaCoins />
-              <span>Спечели повече</span>
-            </button>
-          </div>
-
-          {/* Mobile Navigation Menu */}
-          {isMobileMenuOpen && (
-            <div className="absolute top-16 left-0 right-0 bg-[#1a1740] shadow-lg md:hidden z-50">
-              <div className="flex flex-col p-4 space-y-4">
-                <button
-                  onClick={() => {
-                    handleNavigation("Store");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
-                >
-                  <FaStore />
-                  <span>Store</span>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    handleGameNavigation();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
-                >
-                  <FaGamepad />
-                  <span>Play Game</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    handleNavigation("earn-more");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
-                >
-                  <FaCoins />
-                  <span>Earn More</span>
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Auth Buttons */}
-          <div className="relative z-10">
+          <div className="relative z-10 hidden md:flex items-center gap-4">
             {user ? (
               <div>
                 <button
@@ -215,6 +181,46 @@ const Navbar: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-16 left-0 right-0 bg-[#1a1740] shadow-lg md:hidden z-50">
+            <div className="flex flex-col p-4 space-y-4">
+              <button
+                onClick={() => {
+                  handleNavigation("Store");
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
+              >
+                <FaStore />
+                <span>Store</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  handleGameNavigation();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
+              >
+                <FaGamepad />
+                <span>Play Game</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  handleNavigation("earn-more");
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
+              >
+                <FaCoins />
+                <span>Earn More</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Redesigned Logout Modal */}
