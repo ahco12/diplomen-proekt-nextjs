@@ -86,7 +86,7 @@ const Navbar: React.FC = () => {
           </button>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-12">
+          <div className="hidden md:flex justify-center items-center gap-12 absolute left-1/2 transform -translate-x-1/2">
             {/* Store Button */}
             <button
               onClick={() => handleNavigation("Store")}
@@ -117,48 +117,8 @@ const Navbar: React.FC = () => {
             </button>
           </div>
 
-          {/* Mobile Navigation Menu */}
-          {isMobileMenuOpen && (
-            <div className="absolute top-16 left-0 right-0 bg-[#1a1740] shadow-lg md:hidden z-50">
-              <div className="flex flex-col p-4 space-y-4">
-                <button
-                  onClick={() => {
-                    handleNavigation("Store");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
-                >
-                  <FaStore />
-                  <span>Store</span>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    handleGameNavigation();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
-                >
-                  <FaGamepad />
-                  <span>Play Game</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    handleNavigation("earn-more");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
-                >
-                  <FaCoins />
-                  <span>Earn More</span>
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Auth Buttons */}
-          <div className="relative z-10">
+          <div className="hidden md:flex items-center gap-4">
             {user ? (
               <div>
                 <button
@@ -214,6 +174,46 @@ const Navbar: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* Mobile Navigation Menu */}
+          {isMobileMenuOpen && (
+            <div className="absolute top-16 left-0 right-0 bg-[#1a1740] shadow-lg md:hidden z-50">
+              <div className="flex flex-col p-4 space-y-4">
+                <button
+                  onClick={() => {
+                    handleNavigation("Store");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
+                >
+                  <FaStore />
+                  <span>Store</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    handleGameNavigation();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
+                >
+                  <FaGamepad />
+                  <span>Play Game</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    handleNavigation("earn-more");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
+                >
+                  <FaCoins />
+                  <span>Earn More</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
