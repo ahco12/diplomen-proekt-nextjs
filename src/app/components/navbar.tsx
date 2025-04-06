@@ -129,7 +129,7 @@
                    className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
                  >
                    <FaStore />
-                   <span>Store</span>
+                   <span>Магазин</span>
                  </button>
  
                  <button
@@ -140,7 +140,7 @@
                    className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
                  >
                    <FaGamepad />
-                   <span>Play Game</span>
+                   <span>Играй</span>
                  </button>
  
                  <button
@@ -151,7 +151,7 @@
                    className="flex items-center gap-2 text-blue-200 hover:text-yellow-400"
                  >
                    <FaCoins />
-                   <span>Earn More</span>
+                   <span>Спечели повече</span>
                  </button>
                </div>
              </div>
