@@ -86,35 +86,37 @@ const Navbar: React.FC = () => {
           </button>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex justify-center items-center gap-12">
-            {/* Store Button */}
-            <button
-              onClick={() => handleNavigation("Store")}
-              className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
-            >
-              <FaStore />
-              <span>Магазин</span>
-            </button>
+          <div className="hidden md:block fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="flex justify-center items-center gap-12">
+              {/* Store Button */}
+              <button
+                onClick={() => handleNavigation("Store")}
+                className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
+              >
+                <FaStore />
+                <span>Магазин</span>
+              </button>
 
-            {/* Centered Play Game Button */}
-            <button
-              onClick={handleGameNavigation}
-              className="relative px-8 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold rounded-lg shadow-lg 
-                     hover:from-yellow-500 hover:to-yellow-600 transform hover:scale-105 transition-all duration-300
-                     text-xl z-10"
-            >
-              Играй
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg blur opacity-30 group-hover:opacity-50" />
-            </button>
+              {/* Centered Play Game Button */}
+              <button
+                onClick={handleGameNavigation}
+                className="relative px-8 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold rounded-lg shadow-lg 
+                       hover:from-yellow-500 hover:to-yellow-600 transform hover:scale-105 transition-all duration-300
+                       text-xl z-10"
+              >
+                Играй
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg blur opacity-30 group-hover:opacity-50" />
+              </button>
 
-            {/* Earn More Button */}
-            <button
-              onClick={() => handleNavigation("earn-more")}
-              className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
-            >
-              <FaCoins />
-              <span>Спечели повече</span>
-            </button>
+              {/* Earn More Button */}
+              <button
+                onClick={() => handleNavigation("earn-more")}
+                className="flex items-center text-lg gap-2 text-blue-200 hover:text-yellow-400 transition-colors duration-300 hover:underline decoration-2 underline-offset-4"
+              >
+                <FaCoins />
+                <span>Спечели повече</span>
+              </button>
+            </div>
           </div>
 
           {/* Mobile Navigation Menu */}
