@@ -401,13 +401,13 @@ const AdminPage: React.FC = () => {
             <div className="bg-white shadow rounded-lg">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h2 className="text-lg font-medium text-gray-900">
-                  {editingQuestionId ? 'Edit Question' : 'Add New Question'}
+                  {editingQuestionId ? 'Редактиране на въпрос' : 'Създаване на нов въпрос'}
                 </h2>
               </div>
               <div className="p-8 space-y-4">
                 <input
                   type="text"
-                  placeholder="Enter question"
+                  placeholder="Въпрос..."
                   value={questionText}
                   onChange={e => setQuestionText(e.target.value)}
                   className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
@@ -459,7 +459,7 @@ const AdminPage: React.FC = () => {
                           onChange={() => setAnswers(answers.map((a, i) => ({ ...a, isCorrect: i === index })))}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
                         />
-                        <label className="ml-2 text-sm text-gray-700">Correct</label>
+                        <label className="ml-2 text-sm text-gray-700">Правилен</label>
                       </div>
                     </div>
                   ))}
@@ -542,12 +542,12 @@ const AdminPage: React.FC = () => {
             <div className="bg-white shadow rounded-lg">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h2 className="text-lg font-medium text-gray-900">
-                  {editingStoreItemId ? 'Edit Store Item' : 'Add New Store Item'}
+                  {editingStoreItemId ? 'Редактиране на продукт' : 'Създаване на нов продукт'}
                 </h2>
               </div>
               <div className="p-8 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Компания</label>
                   <select
                     value={selectedCompany}
                     onChange={e => setSelectedCompany(e.target.value)}
