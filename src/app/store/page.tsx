@@ -368,7 +368,7 @@ export default function StorePage() {
                 onClick={redeemItem}
                 disabled={isRedeeming}
               >
-                {isRedeeming ? "Processing..." : "Confirm"}
+                {isRedeeming ? "Processing..." : "Потвърди"}
               </button>
             </div>
           </div>
