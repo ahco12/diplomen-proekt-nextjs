@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase/firebaseConfig';
+import { useRouter } from 'next/navigation';
+import { auth, db } from '../firebase/firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import {
   collection,
   getDocs,
   addDoc,
   updateDoc,
-  doc,
   deleteDoc,
   deleteField,
 } from 'firebase/firestore';
@@ -29,10 +31,13 @@ interface StoreItem {
 }
 
 const AdminPage: React.FC = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loadingAuth, setLoadingAuth] = useState(true);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<'easy' | 'medium' | 'hard'>('easy');
   const [activeSection, setActiveSection] = useState<'questions' | 'storeItems'>('questions');
+  const router = useRouter();
 
   // Question State
   const [questionText, setQuestionText] = useState('');
@@ -49,11 +54,38 @@ const AdminPage: React.FC = () => {
   const [itemDescription, setItemDescription] = useState('');
   const [itemPointsRequired, setItemPointsRequired] = useState<number>(0);
   const [editingStoreItemId, setEditingStoreItemId] = useState<string | null>(null);
-  
+
   // Scroll button
   const [showScrollButton, setShowScrollButton] = useState(false);
 
-  // --- Fetch Questions ---
+  useEffect(() => {
+    const checkAdmin = async (uid: string) => {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', uid));
+        if (userDoc.exists() && userDoc.data().admin === true) {
+          setIsAdmin(true);
+        } else {
+          router.push('/');
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        router.push('/');
+      } finally {
+        setLoadingAuth(false);
+      }
+    };
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        checkAdmin(user.uid);
+      } else {
+        router.push('/');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -74,7 +106,6 @@ const AdminPage: React.FC = () => {
     fetchQuestions();
   }, []);
 
-  // --- Fetch Store Items ---
   useEffect(() => {
     const fetchStoreItems = async () => {
       try {
@@ -152,7 +183,6 @@ const AdminPage: React.FC = () => {
 
   const hasCorrectAnswer = () => answers.some(ans => ans.isCorrect);
 
-  // --- Handle Add/Update Question ---
   const handleAddOrUpdateQuestion = async () => {
     if (!questionText.trim()) {
       toast.error('Върпосът не може да бъде празен!');
@@ -208,7 +238,6 @@ const AdminPage: React.FC = () => {
     });
   };
 
-  // --- Handle Add/Update Store Item ---
   const handleAddStoreItem = async () => {
     if (!selectedCompany || !itemName.trim() || !itemDescription.trim() || itemPointsRequired <= 0) {
       toast.error('Моля попълнете всички полета!');
@@ -324,7 +353,6 @@ const AdminPage: React.FC = () => {
     scrollToTop();
   };
 
-  // --- Scroll-to-Top Button ---
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -337,6 +365,14 @@ const AdminPage: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  if (loadingAuth) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
