@@ -4,6 +4,7 @@ import './globals.css';
 import { Manrope } from 'next/font/google';
 
 import NavbarWrapper from './components/NavbarWrapper'; // <-- Import our wrapper
+import Footer from './components/Footer';
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -16,6 +17,8 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const isGamePage = typeof window !== 'undefined' && window.location.pathname === '/game';
+
   return (
     <html lang="en" className={manrope.className}>
       <body>
@@ -23,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* The NavbarWrapper will decide whether to display the actual <Navbar /> */}
           <NavbarWrapper />
           {children}
+          {!isGamePage && <Footer />}
         </AuthProvider>
       </body>
     </html>
