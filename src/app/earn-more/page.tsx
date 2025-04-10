@@ -185,14 +185,14 @@ export default function EarnMorePage() {
     <div className="min-h-screen bg-gradient-to-br from-[#1a1740] to-[#2a1f6f] p-8">
       {/* Header with Points Display */}
       <div className="max-w-4xl mx-auto mb-8">
-        <div className="flex justify-between items-center bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200">
+        <div className="flex flex-col sm:flex-row justify-between items-center bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <h1 className="text-2xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200 text-center sm:text-left">
             Математическо предизвикателство
           </h1>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
+          <div className="flex items-center gap-4 mt-4 sm:mt-0">
+            <div className="text-center sm:text-right">
               <p className="text-blue-300 text-sm">Вашите точки</p>
-              <p className="text-2xl font-bold text-yellow-400">{userPoints}</p>
+              <p className="text-xl sm:text-2xl font-bold text-yellow-400">{userPoints}</p>
             </div>
           </div>
         </div>
