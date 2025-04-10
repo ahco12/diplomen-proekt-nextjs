@@ -44,7 +44,7 @@ export default function HomePage() {
       const leaderboardQuery = query(
         collection(db, 'users'),
         orderBy('points', 'desc'),
-        limit(10)
+        limit(6) // Limit to top 6 players
       );
       const querySnapshot = await getDocs(leaderboardQuery);
 
