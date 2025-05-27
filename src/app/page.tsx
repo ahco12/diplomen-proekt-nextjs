@@ -117,7 +117,7 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 rounded-2xl animate-gradient-x"></div>
             <div className="relative bg-[#1a1740] p-8 rounded-2xl h-full transition-transform duration-300 group-hover:scale-[0.99]">
               <FaGamepad className="text-5xl mb-4 text-blue-400" />
-              <h3 className="text-2xl font-bold mb-2">KLasicheska Vitkoriq test 123</h3>
+              <h3 className="text-2xl font-bold mb-2">Класическа викторина</h3>
               <p className="text-blue-300">Проверете вашите знания със серия от въпроси!</p>
             </div>
           </button>
